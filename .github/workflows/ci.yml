@@ -3,13 +3,13 @@ on:
   push:
   pull_request:
 jobs:
-  fmt:
+  fmt_client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: yarn --frozen-lockfile && yarn format
-  lint:
+      - run: yarn --frozen-lockfile && cd client && yarn format
+  lint_client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: yarn --frozen-lockfile && yarn lint
+      - run: yarn --frozen-lockfile && cd client && yarn lint
