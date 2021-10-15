@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: yarn --frozen-lockfile && cd client && yarn format
+      - run: cd client && yarn --frozen-lockfile && yarn format
   lint_client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: yarn --frozen-lockfile && cd client && yarn lint
+      - run: cd client && yarn --frozen-lockfile && yarn lint
