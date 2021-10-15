@@ -20,7 +20,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "husky install",
+    "lint": "eslint --ext .ts,.tsx --fix .",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --list-different ."
   },
   "eslintConfig": {
     "extends": [
@@ -38,6 +42,12 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": [
+      "yarn lint",
+      "yarn format"
     ]
   }
 }
