@@ -1,0 +1,23 @@
+{
+  "name": "pollserver",
+  "version": "1.0.0",
+  "description": "This express server will be used to serve the MCS Polling App",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hiimchrislim/QuizVotingSystem.git"
+  },
+  "author": "Chris, Akshit, Shubh, Ilir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hiimchrislim/QuizVotingSystem/issues"
+  },
+  "homepage": "https://github.com/hiimchrislim/QuizVotingSystem#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
