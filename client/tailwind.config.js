@@ -1,4 +1,4 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   purge: ["./src/**/*.{ts,tsx}", "./public/index.html"],
@@ -6,17 +6,17 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        "sans": ["Raleway", ...defaultTheme.fontFamily.mono]
-      }
+        sans: ["Raleway", ...defaultTheme.fontFamily.mono],
+      },
     },
-    backgroundColor: theme => ({
-      ...theme('colors'),
-      'primary': "#00204E",
-      'background': "#F5F5F5",
-    })
+    backgroundColor: (theme) => ({
+      ...theme("colors"),
+      primary: "#00204E",
+      background: "#F5F5F5",
+    }),
   },
   variants: {
-    extend: {}
+    extend: {},
   },
-  plugins: []
+  plugins: [],
 };
