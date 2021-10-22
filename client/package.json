@@ -24,7 +24,7 @@
     "test": "craco test",
     "eject": "react-scripts eject",
     "prepare": "cd .. && husky install",
-    "lint": "eslint --ext .ts,.tsx --fix .",
+    "lint": "eslint --ext .ts,.tsx,.js --fix .",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --list-different ."
   },
