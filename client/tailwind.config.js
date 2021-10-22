@@ -6,17 +6,17 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Raleway", ...defaultTheme.fontFamily.mono],
-      },
+        sans: ["Raleway", ...defaultTheme.fontFamily.mono]
+      }
     },
     backgroundColor: (theme) => ({
       ...theme("colors"),
       primary: "#00204E",
-      background: "#F5F5F5",
-    }),
+      background: "#F5F5F5"
+    })
   },
   variants: {
-    extend: {},
+    extend: {}
   },
-  plugins: [],
+  plugins: []
 };
