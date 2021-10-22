@@ -5,7 +5,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
-      fontFamily: {sans: ["Raleway", ...defaultTheme.fontFamily.mono],
+      fontFamily: {
+
+        sans: ["Raleway", ...defaultTheme.fontFamily.mono],
       },
     },
     backgroundColor: (theme) => ({
