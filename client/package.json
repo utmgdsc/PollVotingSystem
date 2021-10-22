@@ -48,8 +48,8 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx,js}": [
-      "yarn format",
-      "yarn lint"
+      "yarn lint",
+      "yarn format"
     ]
   },
   "devDependencies": {
