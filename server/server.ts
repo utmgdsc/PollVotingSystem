@@ -1,19 +1,20 @@
 "use strict";
+require("dotenv").config();
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const { io } = require("socket.io");
+
 const log = console.log();
 // read the environment variable (will be 'production' in production mode)
 
 const env = process.env.NODE_ENV;
 
-const express = require("express");
-
 // starting the express server
 const app = express();
 const port = process.env.PORT || 5000;
-const path = require("path");
-
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
 
 // mongoose and mongo connection
 const { mongoose } = require("./db/mongoose");
@@ -26,6 +27,11 @@ mongoose.set("useFindAndModify", false);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+const server = app.listen(port, () => {
+  console.log("Listening on http://localhost:" + port);
+  io.attach(server);
+});
 
 // function isMongoError(error) { // checks for first error returned by promise rejection if Mongo database suddently disconnects
 //     return typeof error === 'object' && error !== null && error.name === "MongoNetworkError"
