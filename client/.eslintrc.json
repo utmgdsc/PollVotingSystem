@@ -16,7 +16,7 @@
   "rules": {
     "no-use-before-define": "off",
     "no-unused-vars": "off"
-//    "no-console": "error"
+    //    "no-console": "error"
   },
   "settings": {
     "react": {
