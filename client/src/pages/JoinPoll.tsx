@@ -1,5 +1,5 @@
 import React from "react";
 
 export const JoinPoll = () => {
-  return <div>JOIN</div>;
+  return <div>JOIN POLL</div>;
 };

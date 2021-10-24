@@ -2,7 +2,7 @@ import React from "react";
 import { Navbar, Option } from "./components/Navbar";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { JoinPoll } from "./pages/JoinPoll";
-import { PollOptionButton } from "./components/PollOptionButton";
+import { VotePage } from "./pages/VotePage";
 
 const App = () => {
   const arr: Array<Option> = [
@@ -19,14 +19,14 @@ const App = () => {
   return (
     <div className={"min-h-screen bg-background"}>
       <Navbar options={arr} />
-      <div className={"ml-auto mr-auto"}>
+      <div className={"flex justify-center py-2 my-3"}>
         <BrowserRouter>
           <Switch>
             <Route exact path={"/"}>
               <JoinPoll />
             </Route>
             <Route exact path={"/vote"}>
-              <PollOptionButton name={"A"} />
+              <VotePage options={5} question={"Test Question"} />
             </Route>
           </Switch>
         </BrowserRouter>
