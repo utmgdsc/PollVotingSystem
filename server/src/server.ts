@@ -5,14 +5,14 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import io from "./socket";
+import { db } from "./db/mogoose";
+db.on("open", () => {
+  console.log("Connected to mongo");
+});
 
 // starting the express server
 const app = express();
 const port = process.env.PORT || 5000;
-
-// mongoose and mongo connection
-const { mongoose } = require("./db/mongoose");
-mongoose.set("useFindAndModify", false);
 
 // parse cookies and body and enable cors
 app.use(

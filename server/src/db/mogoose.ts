@@ -1,4 +1,4 @@
-import { model, connect } from "mongoose";
+import { model, connect, connection } from "mongoose";
 import {
   PollDocument,
   pollSchema,
@@ -12,4 +12,8 @@ export const PollResultsModel = model<PollResultsDocument>(
   pollResultsSchema
 );
 
-connect(process.env.MONGODB_URL);
+connect(process.env.MONGODB_URL).catch((err) => {
+  throw err;
+});
+
+export const db = connection;

@@ -5,8 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "prestart": "tsc",
+    "start": "node .",
+    "dev": "nodemon --watch src -e ts,ejs --exec yarn run start"
   },
   "repository": "git+https://github.com/hiimchrislim/QuizVotingSystem.git",
   "author": "Chris, Akshit, Shubh, Ilir",
@@ -39,6 +40,7 @@
     "eslint-plugin-promise": "^5.1.1",
     "nodemon": "^2.0.14",
     "prettier": "^2.4.1",
+    "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
   }
 }
