@@ -27,7 +27,7 @@ export const VotePage = ({ question, options }: VotePageParams) => {
   };
 
   return (
-    <div className={"flex items-center flex-col px-5"}>
+    <div className={"flex flex-col items-center px-5"}>
       <p className={"text-center text-3xl mt-4 mb-12"}>Poll Name</p>
       <div className={"max-w-xl"}>
         <p className={"text-2xl mb-5 text-center my-5"}>{question}</p>
