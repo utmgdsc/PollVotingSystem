@@ -17,6 +17,7 @@
   "homepage": "https://github.com/hiimchrislim/QuizVotingSystem#readme",
   "dependencies": {
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "mongoose": "^6.0.12",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/node": "^16.11.5",

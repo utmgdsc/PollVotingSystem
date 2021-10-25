@@ -1,16 +1,10 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const { io } = require("socket.io");
-
-const log = console.log();
-// read the environment variable (will be 'production' in production mode)
-
-const env = process.env.NODE_ENV;
+import * as dotenv from "dotenv";
+dotenv.config();
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import io from "./socket";
 
 // starting the express server
 const app = express();
@@ -20,31 +14,18 @@ const port = process.env.PORT || 5000;
 const { mongoose } = require("./db/mongoose");
 mongoose.set("useFindAndModify", false);
 
-// enable CORS if in development, for React local development server to connect to the web server.
-// if (env !== 'production') { app.use(cors()) }
-
-// body-parser: middleware for parsing HTTP JSON body into a usable object
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// parse cookies and body and enable cors
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.FRONTEND_URL,
+  })
+);
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 
 const server = app.listen(port, () => {
   console.log("Listening on http://localhost:" + port);
   io.attach(server);
 });
-
-// function isMongoError(error) { // checks for first error returned by promise rejection if Mongo database suddently disconnects
-//     return typeof error === 'object' && error !== null && error.name === "MongoNetworkError"
-// }
-
-// // middleware for mongo connection error for routes that need it
-const mongoChecker = (req, res, next) => {
-  // check mongoose connection established.
-  if (mongoose.connection.readyState != 1) {
-    // log('Issue with mongoose connection')
-    res.status(500).send("Internal server error");
-    return;
-  } else {
-    next();
-  }
-};
