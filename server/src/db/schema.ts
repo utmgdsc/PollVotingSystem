@@ -38,6 +38,7 @@ export interface Poll {
   questions: QuestionDocument[];
   running: boolean;
   created: Date;
+  started?: Date;
   ended?: Date;
 }
 
@@ -50,6 +51,7 @@ export const pollSchema = new Schema<PollDocument>({
   questions: { type: [question], required: true },
   running: { type: Boolean, required: true },
   created: { type: Date, required: true },
+  started: Date,
   ended: Date,
 });
 

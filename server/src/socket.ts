@@ -1,5 +1,12 @@
 // socket setup
 import { Server, Socket } from "socket.io";
+
+// keep track of whether a room is open or closed instead of querying from db
+/**
+ * TODO: shift to redis
+ */
+export const rooms: Record<string, boolean> = {};
+
 const io = new Server({
   cors: {
     origin: process.env.FRONTEND,

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPoll } from "../controllers/pollController";
+import { createPoll, startPoll } from "../controllers/pollController";
 
 const pollRouter = Router();
 
@@ -15,10 +15,21 @@ pollRouter.post("/", async (req, res) => {
       created: new Date(),
     };
     const result = await createPoll(poll);
-    return res.send(result);
+    return res.status(201).send(result);
   } catch (err) {
     console.log(err);
     return res.status(500).send({ message: "Poll creation failed" });
+  }
+});
+
+pollRouter.patch("/:pollId/start", async (req, res) => {
+  const { pollId } = req.params;
+  try {
+    await startPoll(pollId);
+    return res.send({ message: "Poll successfully started" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ message: "Poll failed to start" });
   }
 });
 
