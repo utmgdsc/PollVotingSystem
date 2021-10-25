@@ -27,9 +27,12 @@ export const VotePage = ({ question, options }: VotePageParams) => {
   };
 
   return (
-    <div className={"inline-flex flex-col px-5"}>
-      <h1 className={"text-center my-5"}>{question}</h1>
-      <div className={"flex flex-col"}>{optionButtons()}</div>
+    <div className={"flex items-center flex-col px-5"}>
+      <p className={"text-center text-3xl mt-4 mb-12"}>Poll Name</p>
+      <div className={"max-w-xl"}>
+        <p className={"text-2xl mb-5 text-center my-5"}>{question}</p>
+      </div>
+      <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
     </div>
   );
 };
