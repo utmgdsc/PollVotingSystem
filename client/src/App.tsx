@@ -19,14 +19,17 @@ const App = () => {
   return (
     <div className={"min-h-screen bg-background"}>
       <Navbar options={arr} />
-      <div className={"flex justify-center py-2 my-3"}>
+      <div className={"justify-center py-2 my-3"}>
         <BrowserRouter>
           <Switch>
             <Route exact path={"/"}>
               <JoinPoll />
             </Route>
             <Route exact path={"/vote"}>
-              <VotePage options={5} question={"Test Question"} />
+              <VotePage
+                options={5}
+                question={"What's the runtime of the function?"}
+              />
             </Route>
           </Switch>
         </BrowserRouter>
