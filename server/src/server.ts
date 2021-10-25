@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import io from "./socket";
+import pollRouter from "./routes/pollRoute";
 import { db } from "./db/mogoose";
 db.on("open", () => {
   console.log("Connected to mongo");
@@ -24,6 +25,7 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use("/poll", pollRouter);
 
 const server = app.listen(port, () => {
   console.log("Listening on http://localhost:" + port);
