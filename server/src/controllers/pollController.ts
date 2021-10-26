@@ -14,7 +14,7 @@ async function createPoll(poll: Poll) {
     /**
      * TODO: add room status to redis
      */
-    rooms[pollId] = null;
+    rooms[pollId] = [-1, poll.questions.length];
     return { pollId };
   } catch (err) {
     /**
@@ -25,27 +25,21 @@ async function createPoll(poll: Poll) {
 }
 
 async function setPollStatus(pollId: string, running: boolean) {
-  /**
-   * TODO: Validate input
-   * Check whether the user starting the poll was the one who created the poll
-   */
   // poll is already in the required state so don't update db
-  if (rooms[pollId] !== null && running) return;
-  else if (rooms[pollId] === null && !running) return;
+  if (rooms[pollId][0] !== -1 && running) return;
+  else if (rooms[pollId][0] === -1 && !running) return;
 
   const data: Record<string, Date> = {};
   if (running) data["started"] = new Date();
   else data["ended"] = new Date();
 
-  const result = await PollModel.findOneAndUpdate(
-    { _id: pollId },
-    { $set: { running, ...data } }
-  );
-  console.log(result);
+  await PollModel.updateOne({ _id: pollId }, { $set: { running, ...data } });
+
   /**
    * TODO: add room status to redis
    */
-  if (running) rooms[pollId] = result.questions[0]["_id"];
+  if (running) rooms[pollId] = [0, rooms[pollId][1]];
+  // set to first question
   else rooms[pollId] = null;
 
   return;
@@ -68,7 +62,7 @@ async function endPoll(pollId: string) {
     await setPollStatus(pollId, false);
 
     // notify clients connected to this poll that the poll has ended
-    io.emit("end", { pollId: pollId });
+    io.emit("end", { pollId });
     return;
   } catch (err) {
     /**
@@ -78,4 +72,14 @@ async function endPoll(pollId: string) {
   }
 }
 
-export { createPoll, startPoll, endPoll };
+async function changeQuestion(pollId: string, newQuestion: number) {
+  if (rooms[pollId][0] === -1) throw { message: "quiz hasn't started" };
+  if (newQuestion >= rooms[pollId][1])
+    throw { message: "all questions covered" };
+  if (newQuestion < 0) throw { message: "can't go back" };
+  rooms[pollId][0] = newQuestion;
+  io.emit("question", { pollId, currentQuestion: rooms[pollId][0] });
+  return { currentQuestion: rooms[pollId][0] };
+}
+
+export { createPoll, startPoll, endPoll, changeQuestion };
