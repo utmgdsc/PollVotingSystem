@@ -16,7 +16,6 @@ pollRouter.post("/", async (req, res) => {
       description,
       courseCode,
       questions,
-      running: false,
       created: new Date(),
     };
     const result = await createPoll(poll);
@@ -29,8 +28,9 @@ pollRouter.post("/", async (req, res) => {
 
 pollRouter.patch("/:pollId/start", async (req, res) => {
   const { pollId } = req.params;
+  const { questionId } = req.body;
   try {
-    await startPoll(pollId);
+    await startPoll(pollId, questionId);
     return res.send({ message: "Poll successfully started" });
   } catch (err) {
     console.log(err);
@@ -40,8 +40,9 @@ pollRouter.patch("/:pollId/start", async (req, res) => {
 
 pollRouter.patch("/:pollId/end", async (req, res) => {
   const { pollId } = req.params;
+  const { questionId } = req.body;
   try {
-    await endPoll(pollId);
+    await endPoll(pollId, questionId);
     return res.send({ message: "Poll successfully ended" });
   } catch (err) {
     console.log(err);
@@ -49,11 +50,11 @@ pollRouter.patch("/:pollId/end", async (req, res) => {
   }
 });
 
-pollRouter.patch("/:pollId/change/question", (req, res) => {
+pollRouter.patch("/:pollId/change/question", async (req, res) => {
   const { pollId } = req.params;
   const { newQuestion } = req.body;
   try {
-    const result = changeQuestion(pollId, newQuestion);
+    const result = await changeQuestion(pollId, newQuestion);
     return res.send(result);
   } catch (err) {
     console.log(err);

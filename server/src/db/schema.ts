@@ -3,22 +3,27 @@ import { Schema, Types, Document } from "mongoose";
 /**
  * A question subdocument. Used as nested objects in Poll schema
  * question: The question that will be displayed to students
- * options: Array of options for this question
+ * options: Number of options
  */
 export interface Question {
   question?: string;
-  options: number[];
+  options: number;
+  started?: Date;
+  ended?: Date;
 }
 
-export interface QuestionDocument extends Question, Document {}
-
-const question = new Schema<QuestionDocument>({
-  question: String,
-  options: {
-    type: [Number],
-    required: true,
+const question = new Schema<Question>(
+  {
+    question: String,
+    options: {
+      type: Number,
+      required: true,
+    },
+    started: Date,
+    ended: Date,
   },
-});
+  { _id: false }
+);
 
 /**
  * Poll schema. Represents how a single poll will look like
@@ -35,11 +40,8 @@ export interface Poll {
   name: string;
   description?: string;
   courseCode: string;
-  questions: QuestionDocument[];
-  running: boolean;
+  questions: Question[];
   created: Date;
-  started?: Date;
-  ended?: Date;
 }
 
 export interface PollDocument extends Poll, Document {}
@@ -49,10 +51,7 @@ export const pollSchema = new Schema<PollDocument>({
   description: String,
   courseCode: { type: String, required: true },
   questions: { type: [question], required: true },
-  running: { type: Boolean, required: true },
   created: { type: Date, required: true },
-  started: Date,
-  ended: Date,
 });
 
 /**
@@ -62,14 +61,14 @@ export const pollSchema = new Schema<PollDocument>({
  * timestamp: when was was the question answered
  */
 export interface Answer {
-  questionId: Types.ObjectId;
+  questionId: number;
   answer: number[];
   timestamp: Date;
 }
 const answer = new Schema<Answer>(
   {
     questionId: {
-      type: Schema.Types.ObjectId,
+      type: Number,
       required: true,
     },
     answer: {

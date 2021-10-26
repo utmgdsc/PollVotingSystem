@@ -8,7 +8,7 @@ import { Server, Socket } from "socket.io";
 /**
  * TODO: shift to redis
  */
-const rooms: Record<string, number[]> = {};
+const rooms: Record<string, Record<string, number>> = {};
 
 const io = new Server({
   cors: {
