@@ -5,7 +5,7 @@ import { Server, Socket } from "socket.io";
 /**
  * TODO: shift to redis
  */
-export const rooms: Record<string, boolean> = {};
+const rooms: Record<string, boolean> = {};
 
 const io = new Server({
   cors: {
@@ -18,4 +18,4 @@ io.on("connection", (socket: Socket) => {
   console.log(`connect: ${socket.id}`);
 });
 
-export default io;
+export { io, rooms };

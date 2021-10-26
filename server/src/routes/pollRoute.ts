@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPoll, startPoll } from "../controllers/pollController";
+import { createPoll, endPoll, startPoll } from "../controllers/pollController";
 
 const pollRouter = Router();
 
@@ -30,6 +30,17 @@ pollRouter.patch("/:pollId/start", async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).send({ message: "Poll failed to start" });
+  }
+});
+
+pollRouter.patch("/:pollId/end", async (req, res) => {
+  const { pollId } = req.params;
+  try {
+    await endPoll(pollId);
+    return res.send({ message: "Poll successfully ended" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ message: "Poll failed to end" });
   }
 });
 

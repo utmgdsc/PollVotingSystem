@@ -4,7 +4,7 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import io from "./socket";
+import { io } from "./socket";
 import pollRouter from "./routes/pollRoute";
 import { db } from "./db/mogoose";
 db.on("open", () => {
