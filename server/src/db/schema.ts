@@ -1,4 +1,4 @@
-import { Schema, Types, Document, model } from "mongoose";
+import { Schema, Types, Document } from "mongoose";
 
 /**
  * A question subdocument. Used as nested objects in Poll schema

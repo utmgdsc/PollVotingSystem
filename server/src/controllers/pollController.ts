@@ -14,7 +14,7 @@ async function createPoll(poll: Poll) {
     /**
      * TODO: add room status to redis
      */
-    rooms[pollId] = false;
+    rooms[pollId] = null;
     return { pollId };
   } catch (err) {
     /**
@@ -29,17 +29,25 @@ async function setPollStatus(pollId: string, running: boolean) {
    * TODO: Validate input
    * Check whether the user starting the poll was the one who created the poll
    */
-  // poll has already started so no need to make db update
-  if (rooms[pollId] === running) return;
+  // poll is already in the required state so don't update db
+  if (rooms[pollId] !== null && running) return;
+  else if (rooms[pollId] === null && !running) return;
+
   const data: Record<string, Date> = {};
   if (running) data["started"] = new Date();
   else data["ended"] = new Date();
 
-  await PollModel.updateOne({ _id: pollId }, { $set: { running, ...data } });
+  const result = await PollModel.findOneAndUpdate(
+    { _id: pollId },
+    { $set: { running, ...data } }
+  );
+  console.log(result);
   /**
    * TODO: add room status to redis
    */
-  rooms[pollId] = running;
+  if (running) rooms[pollId] = result.questions[0]["_id"];
+  else rooms[pollId] = null;
+
   return;
 }
 
