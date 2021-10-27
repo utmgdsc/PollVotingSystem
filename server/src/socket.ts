@@ -1,6 +1,6 @@
 // socket setup
 import { Server, Socket } from "socket.io";
-import { vote } from "./controllers/questionController";
+import { vote, join } from "./controllers/socketController";
 
 // keep track of whether a room is open or closed instead of querying from dd
 // For each room key, the value is an array where the first element is the current question
@@ -12,48 +12,27 @@ import { vote } from "./controllers/questionController";
 const rooms: Record<string, Record<string, number>> = {};
 
 const io = new Server({
-  cors: {
-    origin: process.env.FRONTEND,
-  },
+  // cors: {
+  //   origin: process.env.FRONTEND,
+  // },
 });
 
 // log the socket id when client socket connects for the first time
 io.on("connection", (socket: Socket) => {
   console.log(`connect: ${socket.id}`);
-});
 
-io.on("join", (socket: Socket, pollId: string) => {
-  if (!(pollId in rooms)) {
-    io.to(socket.id).emit("error", { message: "No such poll" });
-    return;
-  }
+  // let the socket join rooms once connected
+  socket.on("join", (pollId: string) => {
+    join(socket, pollId);
+  });
 
-  // ensure that socket is connected to 1 room (other than the default room)
-  for (let room in socket.rooms) {
-    if (room !== socket.id) socket.leave(room);
-  }
-  socket.join(pollId);
-  io.to(socket.id).emit("start", { questionId: rooms[pollId].currentQuestion });
-});
-
-io.on(
-  "vote",
-  async (
-    socket: Socket,
-    questionId: number,
-    option: number,
-    studentId: string
-  ) => {
-    let pollId = null;
-    for (let room in socket.rooms) {
-      if (room !== socket.id) pollId = room;
+  // let the socket vote in the connected room
+  socket.on(
+    "vote",
+    async (questionId: number, option: number, studentId: string) => {
+      await vote(socket, questionId, option, studentId);
     }
-    try {
-      await vote(pollId, questionId, option, studentId);
-    } catch (err) {
-      io.to(socket.id).emit("error", { message: "Vote failed" });
-    }
-  }
-);
+  );
+});
 
 export { io, rooms };
