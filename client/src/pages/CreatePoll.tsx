@@ -20,27 +20,36 @@ export const CreatePoll = () => {
     courseCode: "",
     questions: [],
   };
-  const [pollConfig, updatePollConfig] = useState(initialState);
-  const pollOptions = [
-    ["Poll Code", "Name"],
-    ["Poll Description", "Description"],
-    ["Course Code", "Course Code"],
-  ];
 
-  const handler = (a: string, b: string) => {
+  const [pollConfig, updatePollConfig] = useState(initialState);
+  const pollOptions = {
+    name: ["Poll Code", "Name"],
+    description: ["Poll Description", "Description"],
+    courseCode: ["Course Code", "Course Code"],
+  };
+
+  const handler = (
+    a: string,
+    pollOption: "courseCode" | "name" | "description"
+  ) => {
     const newPollConfig = { ...pollConfig };
+    newPollConfig[pollOption] = a;
     console.log(newPollConfig);
     updatePollConfig(newPollConfig);
   };
 
-  const pollInputs = pollOptions.map((pollOption, idx) => {
+  const pollInputs = (
+    Object.keys(pollOptions) as Array<keyof typeof pollOptions>
+  ).map((pollOption, idx) => {
+    const header = pollOptions[pollOption][0];
+    const placeholder = pollOptions[pollOption][1];
     return (
       <PollInput
         key={idx}
-        onChangeHandler={(e: string) => handler(e, pollOption[1].toLowerCase())}
-        pollValue={pollConfig.name}
-        inputHeader={pollOption[0]}
-        placeholder={pollOption[1]}
+        onChangeHandler={(e: string) => handler(e, pollOption)}
+        pollValue={pollConfig[pollOption]}
+        header={header}
+        placeholder={placeholder}
       />
     );
   });
