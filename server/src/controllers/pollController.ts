@@ -93,13 +93,20 @@ async function endPoll(pollId: string, questionId: number) {
 }
 
 async function changeQuestion(pollId: string, newQuestion: number) {
-  if (newQuestion >= rooms[pollId].totalQuestions || newQuestion < 0)
-    throw { message: "invalid question id" };
+  try {
+    if (newQuestion >= rooms[pollId].totalQuestions || newQuestion < 0)
+      throw { message: "invalid question id" };
 
-  await setPollStatus(pollId, true, newQuestion);
-  console.log(rooms);
-  io.emit("start", { pollId, questionId: rooms[pollId][0] });
-  return { questionId: rooms[pollId].currentQuestion };
+    await setPollStatus(pollId, true, newQuestion);
+    console.log(rooms);
+    io.emit("start", { pollId, questionId: rooms[pollId][0] });
+    return { questionId: rooms[pollId].currentQuestion };
+  } catch (err) {
+    /**
+     * TODO: Add error handler
+     */
+    throw err;
+  }
 }
 
 export { createPoll, startPoll, endPoll, changeQuestion };

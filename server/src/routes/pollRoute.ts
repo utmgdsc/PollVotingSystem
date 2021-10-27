@@ -52,9 +52,9 @@ pollRouter.patch("/:pollId/end", async (req, res) => {
 
 pollRouter.patch("/:pollId/change/question", async (req, res) => {
   const { pollId } = req.params;
-  const { newQuestion } = req.body;
+  const { newQuestionId } = req.body;
   try {
-    const result = await changeQuestion(pollId, newQuestion);
+    const result = await changeQuestion(pollId, newQuestionId);
     return res.send(result);
   } catch (err) {
     console.log(err);
