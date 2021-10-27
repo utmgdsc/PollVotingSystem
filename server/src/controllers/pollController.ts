@@ -1,5 +1,5 @@
-import { Question, Poll } from "../db/schema";
-import { PollModel } from "../db/mogoose";
+import { Poll } from "../db/schema";
+import { PollModel, PollResultsModel } from "../db/mogoose";
 import { rooms, io } from "../socket";
 
 async function createPoll(poll: Poll) {
@@ -27,47 +27,35 @@ async function createPoll(poll: Poll) {
   }
 }
 
-async function setPollStatus(
-  pollId: string,
-  running: boolean,
-  questionId: number
-) {
-  if (questionId >= rooms[pollId].totalQuestions || questionId < 0)
-    throw { message: "Invalid RoomId" };
-
-  // poll is already in the required state so don't update db
-  if (rooms[pollId].currentQuestion === questionId && running) return;
-  else if (rooms[pollId].currentQuestion !== questionId && !running) return;
-
-  // update the start time of question, update the end time of the question
-  let field = running
-    ? `questions.${questionId}.started`
-    : `questions.${questionId}.ended`;
-  const data: Record<string, Date> = {};
-  data[field] = new Date();
-
-  // update the end time of the current question if we are requesting a new question to start
-  if (running && rooms[pollId].currentQuestion !== -1) {
-    field = `questions.${rooms[pollId].currentQuestion}.ended`;
-    data[field] = new Date();
-  }
-  await PollModel.updateOne({ _id: pollId }, { $set: data });
-
-  /**
-   * TODO: add room status to redis
-   */
-  if (running) rooms[pollId].currentQuestion = questionId;
-  else rooms[pollId].currentQuestion = -1;
-
-  return;
-}
-
 async function startPoll(pollId: string, questionId: number) {
+  const { currentQuestion, totalQuestions } = rooms[pollId];
   try {
-    await setPollStatus(pollId, true, questionId);
+    if (questionId >= totalQuestions || questionId < 0)
+      throw { message: "Invalid RoomId" };
+
+    if (currentQuestion === questionId) return;
+
+    let promises = [
+      PollResultsModel.updateOne(
+        { pollId, questionId },
+        { $set: { started: new Date() } }
+      ),
+    ];
+
+    // end the current question
+    if (currentQuestion !== -1) {
+      promises.push(
+        PollResultsModel.updateOne(
+          { pollId, questionId: currentQuestion },
+          { $set: { ended: new Date() } }
+        )
+      );
+    }
+    await Promise.all(promises);
+    rooms[pollId].currentQuestion = questionId;
     console.log(rooms);
     //notify client that there is a new question that has started
-    io.emit("start", { pollId, questionId });
+    io.to(pollId).emit("start", { questionId });
     return;
   } catch (err) {
     /**
@@ -78,11 +66,20 @@ async function startPoll(pollId: string, questionId: number) {
 }
 
 async function endPoll(pollId: string, questionId: number) {
+  const { currentQuestion, totalQuestions } = rooms[pollId];
   try {
-    await setPollStatus(pollId, false, questionId);
+    if (questionId >= totalQuestions || questionId < 0)
+      throw { message: "Invalid question id" };
+
+    if (currentQuestion === -1) return;
+    await PollResultsModel.updateOne(
+      { pollId, questionId },
+      { $set: { ended: new Date() } }
+    );
+    rooms[pollId].currentQuestion = -1;
     console.log(rooms);
     // notify clients connected to this poll that the poll has ended
-    io.emit("end", { pollId, questionId });
+    io.to(pollId).emit("end", { questionId });
     return;
   } catch (err) {
     /**
@@ -92,21 +89,4 @@ async function endPoll(pollId: string, questionId: number) {
   }
 }
 
-async function changeQuestion(pollId: string, newQuestion: number) {
-  try {
-    if (newQuestion >= rooms[pollId].totalQuestions || newQuestion < 0)
-      throw { message: "invalid question id" };
-
-    await setPollStatus(pollId, true, newQuestion);
-    console.log(rooms);
-    io.emit("start", { pollId, questionId: rooms[pollId][0] });
-    return { questionId: rooms[pollId].currentQuestion };
-  } catch (err) {
-    /**
-     * TODO: Add error handler
-     */
-    throw err;
-  }
-}
-
-export { createPoll, startPoll, endPoll, changeQuestion };
+export { createPoll, startPoll, endPoll };
