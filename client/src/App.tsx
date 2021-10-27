@@ -17,9 +17,9 @@ const App = () => {
   ];
 
   return (
-    <div className={"min-h-screen bg-background"}>
+    <div className={"h-screen bg-background"}>
       <Navbar options={arr} />
-      <div className={"justify-center py-2 my-3"}>
+      <div className={"flex justify-center items-center"}>
         <BrowserRouter>
           <Switch>
             <Route exact path={"/"}>
