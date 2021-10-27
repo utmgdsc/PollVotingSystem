@@ -29,8 +29,8 @@ io.on("connection", (socket: Socket) => {
   // let the socket vote in the connected room
   socket.on(
     "vote",
-    async (questionId: number, option: number, studentId: string) => {
-      await vote(socket, questionId, option, studentId);
+    async (questionId: number, answer: number, studentId: string) => {
+      await vote(socket, questionId, answer, studentId);
     }
   );
 });

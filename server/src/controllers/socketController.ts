@@ -1,4 +1,3 @@
-import { Question, Poll } from "../db/schema";
 import { PollResultsModel } from "../db/mogoose";
 import { rooms, io } from "../socket";
 import { Socket } from "socket.io";
@@ -24,7 +23,7 @@ function join(socket: Socket, pollId: string) {
 async function vote(
   socket: Socket,
   questionId: number,
-  option: number,
+  answer: number,
   studentId: string
 ) {
   try {
@@ -44,18 +43,30 @@ async function vote(
 
     await PollResultsModel.updateOne(
       {
-        pollId: pollId,
-        questionId: questionId,
-        "students.studentId": studentId,
+        pollId,
+        questionId,
       },
       {
-        $set: {
+        $pull: {
           studentId,
-          "student.$.option": option,
-          timestamp: new Date(),
         },
+      }
+    );
+
+    await PollResultsModel.updateOne(
+      {
+        pollId: pollId,
+        questionId: questionId,
       },
-      { upsert: true }
+      {
+        $addToSet: {
+          students: {
+            studentId,
+            answer,
+            timestamp: new Date(),
+          },
+        },
+      }
     );
     return;
   } catch (err) {
