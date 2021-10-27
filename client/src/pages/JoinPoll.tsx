@@ -13,7 +13,9 @@ export const JoinPoll = () => {
       <p className={"text-2xl py-2 my-3 font-medium"}>MCS PollVoting</p>
       <div className={"flex flex-col"}>
         <input
-          className={"focus:outline-none text-center border border-black py-2"}
+          className={
+            "focus:outline-none text-center border border-black py-2 px-20"
+          }
           type={"text"}
           placeholder={"Poll Code"}
           value={pollCode}
