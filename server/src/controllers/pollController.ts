@@ -38,7 +38,8 @@ async function startPoll(pollId: string, questionId: number) {
     let promises = [
       PollResultsModel.updateOne(
         { pollId, questionId },
-        { $set: { started: new Date() } }
+        { $set: { started: new Date(), pollId, questionId } },
+        { upsert: true }
       ),
     ];
 
