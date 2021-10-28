@@ -55,24 +55,24 @@ export const pollSchema = new Schema<PollDocument>({
 });
 
 /**
- * answer subdocument. Used as nested objects in student subdocument
- * questionId: unique question id to correspond the student answers to a question
- * answers: the choosen option for the given question id
- * timestamp: when was was the question answered
+ * student subdocument. Used as nested objects in PollResults schema
+ * studentId: unique student id to identify the the student possibly the student number
+ * answers: array of answer subdocument
  */
-export interface Answer {
-  questionId: number;
-  answer: number[];
+export interface Student {
+  studentId: string;
+  answer: number;
   timestamp: Date;
 }
-const answer = new Schema<Answer>(
+
+const student = new Schema<Student>(
   {
-    questionId: {
-      type: Number,
+    studentId: {
+      type: String,
       required: true,
     },
     answer: {
-      type: [Number],
+      type: Number,
       required: true,
     },
     timestamp: {
@@ -84,47 +84,29 @@ const answer = new Schema<Answer>(
 );
 
 /**
- * student subdocument. Used as nested objects in PollResults schema
- * studentId: unique student id to identify the the student possibly the student number
- * answers: array of answer subdocument
+ * Result document. Used as nested objects in student subdocument
+ * questionId: unique question id to correspond the student Results to a question
+ * pollId: id of the poll
+ * students: array of student answers for that question
  */
-export interface Student {
-  studentId: string;
-  answers: Answer[];
+export interface Result {
+  questionId: number;
+  pollId: string;
+  started?: Date;
+  ended?: Date;
+  students?: Student[];
 }
-
-const student = new Schema<Student>(
-  {
-    studentId: {
-      type: String,
-      required: true,
-    },
-    answers: {
-      type: [answer],
-      required: true,
-    },
+export interface ResultDocument extends Result, Document {}
+export const resultSchema = new Schema<ResultDocument>({
+  questionId: {
+    type: Number,
+    required: true,
   },
-  { _id: false }
-);
-
-/**
- * Poll Results schema. Represents the outcome of a poll
- * pollId: Corresponds to a Poll document
- * students: Array of student objects who participated
- */
-export interface PollResults {
-  pollId: Types.ObjectId;
-  students: Student[];
-}
-
-export interface PollResultsDocument extends PollResults, Document {}
-export const pollResultsSchema = new Schema<PollResultsDocument>({
   pollId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
   },
-  students: {
-    type: [student],
-    required: true,
-  },
+  students: [student],
+  started: Date,
+  ended: Date,
 });

@@ -2,14 +2,14 @@ import { model, connect, connection } from "mongoose";
 import {
   PollDocument,
   pollSchema,
-  PollResultsDocument,
-  pollResultsSchema,
+  resultSchema,
+  ResultDocument,
 } from "./schema";
 
 export const PollModel = model<PollDocument>("Poll", pollSchema);
-export const PollResultsModel = model<PollResultsDocument>(
+export const PollResultsModel = model<ResultDocument>(
   "PollResults",
-  pollResultsSchema
+  resultSchema
 );
 
 connect(process.env.MONGODB_URL).catch((err) => {

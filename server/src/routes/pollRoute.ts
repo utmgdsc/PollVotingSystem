@@ -1,10 +1,5 @@
 import { Router } from "express";
-import {
-  createPoll,
-  endPoll,
-  changeQuestion,
-  startPoll,
-} from "../controllers/pollController";
+import { createPoll, endPoll, startPoll } from "../controllers/pollController";
 
 const pollRouter = Router();
 
@@ -47,18 +42,6 @@ pollRouter.patch("/:pollId/end", async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).send({ message: "Poll failed to end" });
-  }
-});
-
-pollRouter.patch("/:pollId/change/question", async (req, res) => {
-  const { pollId } = req.params;
-  const { newQuestionId } = req.body;
-  try {
-    const result = await changeQuestion(pollId, newQuestionId);
-    return res.send(result);
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send(err);
   }
 });
 
