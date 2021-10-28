@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FormInput } from "../components/FormInput";
 import { Button } from "../components/Button";
 import { Header } from "../components/Header";
-import { FormQuestion } from "../components/FormQuestion";
 
 interface NewPoll {
   name: string;
@@ -50,9 +49,6 @@ export const CreatePoll = () => {
     updatePollConfig(newPollConfig);
   };
 
-  const questionPreview = pollConfig.questions.map((question, idx) => {
-    return <FormQuestion key={idx} question={question.question} />;
-  });
   const pollInputs = (
     Object.keys(pollOptions) as Array<keyof typeof pollOptions>
   ).map((pollOption, idx) => {
@@ -74,9 +70,6 @@ export const CreatePoll = () => {
       <div className={"mb-24"}>
         <Header text={"Create Poll"} />
         {pollInputs}
-        Questions
-        {questionPreview}
-        <Button value={"Add Question"} secondary={true} />
       </div>
       <div className={"mt-50"}>
         <Button value={"Create Poll"} />

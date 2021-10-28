@@ -1,6 +1,6 @@
 import React from "react";
 import { Navbar, Option } from "./components/Navbar";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { JoinPoll } from "./pages/JoinPoll";
 import { VotePage } from "./pages/VotePage";
 import { CreatePoll } from "./pages/CreatePoll";
@@ -15,14 +15,6 @@ const App = () => {
       name: "Past Polls",
       href: "/pastPolls",
     },
-    {
-      name: "Github",
-      href: "/github",
-    },
-    {
-      name: "Logout",
-      href: "/logout",
-    },
   ];
 
   return (
@@ -31,17 +23,15 @@ const App = () => {
       <div className={"flex justify-center items-center"}>
         <BrowserRouter>
           <Switch>
-            <Route exact path={"/"}>
-              <JoinPoll />
-            </Route>
             <Route exact path={"/vote"}>
-              <VotePage
-                options={5}
-                question={"What's the runtime of the function?"}
-              />
+              <VotePage />
             </Route>
             <Route exact path={"/createpoll"}>
               <CreatePoll />
+            </Route>
+            <Route path={"/"}>
+              <Redirect to={"/"}></Redirect>
+              <JoinPoll />
             </Route>
           </Switch>
         </BrowserRouter>

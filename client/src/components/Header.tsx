@@ -1,16 +1,9 @@
 import React from "react";
 
 interface HeaderProps {
-  secondary?: boolean;
   text: string;
 }
 
-export const Header = ({ text, secondary }: HeaderProps) => {
-  return (
-    <div
-      className={`${secondary ? "text-xl" : "text-3xl"} text-center py-2 my-3`}
-    >
-      {text}
-    </div>
-  );
+export const Header = ({ text }: HeaderProps) => {
+  return <div className={"text-3xl text-center py-2 my-3"}>{text}</div>;
 };

@@ -2,11 +2,10 @@ import React from "react";
 
 interface ButtonProps {
   value: string;
-  secondary?: boolean;
   onClick?: React.MouseEventHandler;
 }
 
-export const Button = ({ value, secondary, onClick }: ButtonProps) => {
+export const Button = ({ value, onClick }: ButtonProps) => {
   return (
     <div
       className={
@@ -14,9 +13,7 @@ export const Button = ({ value, secondary, onClick }: ButtonProps) => {
       }
     >
       <p
-        className={`${
-          secondary ? "" : "font-bold text-xl"
-        } text-white text-center`}
+        className={"font-bold text-xl text-white text-center"}
         onClick={() => onClick}
       >
         {value}
