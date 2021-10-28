@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { Button } from "../components/Button";
+import { FormInput } from "../components/FormInput";
+import { Header } from "../components/Header";
 
 export const JoinPoll = () => {
   const [pollCode, setPollCode] = useState("");
@@ -10,29 +13,14 @@ export const JoinPoll = () => {
 
   return (
     <div className={"block text-center mt-96 px-5"}>
-      <p className={"text-2xl py-2 my-3 font-medium"}>MCS PollVoting</p>
+      <Header text={"MCS PollVoting"} />
       <div className={"flex flex-col"}>
-        <input
-          className={
-            "focus:outline-none text-center border border-black py-2 px-20"
-          }
-          type={"text"}
+        <FormInput
           placeholder={"Poll Code"}
-          value={pollCode}
-          onChange={(e) => setPollCode(e.target.value)}
+          onChangeHandler={(e) => setPollCode(e)}
+          pollValue={pollCode}
         />
-        <div
-          className={
-            "py-2 inline-block bg-primary hover:bg-hover cursor-pointer px-36"
-          }
-        >
-          <p
-            className={"text-xl font-bold text-white text-center"}
-            onClick={() => joinPollRoom()}
-          >
-            Enter
-          </p>
-        </div>
+        <Button value={"Enter"} />
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ interface PollInputParams {
   pollValue: string;
 }
 
-export const PollInput = ({
+export const FormInput = ({
   placeholder,
   header,
   pollValue,
@@ -20,7 +20,7 @@ export const PollInput = ({
       <div className={"my-2"}>{header !== null ? header : <></>}</div>
       <input
         className={
-          "focus:outline-none text-center border border-black py-2 px-20"
+          "focus:outline-none text-center border border-black py-2 px-1 w-auto"
         }
         type={"text"}
         placeholder={placeholder}

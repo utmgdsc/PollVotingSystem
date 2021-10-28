@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { PollInput } from "../components/PollInput";
+import { FormInput } from "../components/FormInput";
+import { Button } from "../components/Button";
+import { Header } from "../components/Header";
+import { FormQuestion } from "../components/FormQuestion";
 
 interface NewPoll {
   name: string;
@@ -23,7 +26,7 @@ export const CreatePoll = () => {
 
   const [pollConfig, updatePollConfig] = useState(initialState);
   const pollOptions = {
-    name: ["Poll Code", "Name"],
+    name: ["Poll Name", "Name"],
     description: ["Poll Description", "Description"],
     courseCode: ["Course Code", "Course Code"],
   };
@@ -44,7 +47,7 @@ export const CreatePoll = () => {
     const header = pollOptions[pollOption][0];
     const placeholder = pollOptions[pollOption][1];
     return (
-      <PollInput
+      <FormInput
         key={idx}
         onChangeHandler={(e: string) => handler(e, pollOption)}
         pollValue={pollConfig[pollOption]}
@@ -54,5 +57,13 @@ export const CreatePoll = () => {
     );
   });
 
-  return <div className={"flex flex-col"}>{pollInputs}</div>;
+  return (
+    <div className={"flex flex-col"}>
+      <Header text={"Create Poll"} />
+      {pollInputs}
+      <FormQuestion question={"What's the runtime of the function?"} />
+      <Button value={"Add Question"} secondary={true} />
+      <Button value={"Create Poll"} />
+    </div>
+  );
 };

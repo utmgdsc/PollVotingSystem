@@ -1,5 +1,6 @@
 import React from "react";
 import { PollOptionButton } from "../components/PollOptionButton";
+import { Header } from "../components/Header";
 
 interface VotePageParams {
   question: string;
@@ -28,9 +29,9 @@ export const VotePage = ({ question, options }: VotePageParams) => {
 
   return (
     <div className={"flex flex-col items-center px-5"}>
-      <p className={"text-center text-3xl mt-4 mb-12"}>Poll Name</p>
+      <Header text={"Poll Name"} />
       <div className={"max-w-xl"}>
-        <p className={"text-2xl mb-5 text-center my-5"}>{question}</p>
+        <Header text={question} secondary={true} />
       </div>
       <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
     </div>

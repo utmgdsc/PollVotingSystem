@@ -8,6 +8,14 @@ import { CreatePoll } from "./pages/CreatePoll";
 const App = () => {
   const arr: Array<Option> = [
     {
+      name: "Create Poll",
+      href: "/createpoll",
+    },
+    {
+      name: "Past Polls",
+      href: "/pastPolls",
+    },
+    {
       name: "Github",
       href: "/github",
     },
