@@ -13,7 +13,7 @@ interface NewPoll {
 
 interface PollQuestion {
   question: string;
-  pollOptions: number;
+  numOptions: number;
 }
 
 export const CreatePoll = () => {
@@ -21,7 +21,16 @@ export const CreatePoll = () => {
     name: "",
     description: "",
     courseCode: "",
-    questions: [],
+    questions: [
+      {
+        question: "What's the runtime of the function?",
+        numOptions: 5,
+      },
+      {
+        question: "What is the distance from Earth to the Sun?",
+        numOptions: 3,
+      },
+    ],
   };
 
   const [pollConfig, updatePollConfig] = useState(initialState);
@@ -41,6 +50,9 @@ export const CreatePoll = () => {
     updatePollConfig(newPollConfig);
   };
 
+  const questionPreview = pollConfig.questions.map((question, idx) => {
+    return <FormQuestion key={idx} question={question.question} />;
+  });
   const pollInputs = (
     Object.keys(pollOptions) as Array<keyof typeof pollOptions>
   ).map((pollOption, idx) => {
@@ -59,11 +71,16 @@ export const CreatePoll = () => {
 
   return (
     <div className={"flex flex-col"}>
-      <Header text={"Create Poll"} />
-      {pollInputs}
-      <FormQuestion question={"What's the runtime of the function?"} />
-      <Button value={"Add Question"} secondary={true} />
-      <Button value={"Create Poll"} />
+      <div className={"mb-24"}>
+        <Header text={"Create Poll"} />
+        {pollInputs}
+        Questions
+        {questionPreview}
+        <Button value={"Add Question"} secondary={true} />
+      </div>
+      <div className={"mt-50"}>
+        <Button value={"Create Poll"} />
+      </div>
     </div>
   );
 };
