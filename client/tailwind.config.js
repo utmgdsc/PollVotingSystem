@@ -12,13 +12,15 @@ module.exports = {
     backgroundColor: (theme) => ({
       ...theme("colors"),
       primary: "#00204E",
-      secondary: "#ffffff",
+      secondary: "#FFFFFF",
       hover: "#00B5B5",
       background: "#F5F5F5",
     }),
   },
   variants: {
-    extend: {},
+    extend: {
+      fill: ["hover"],
+    },
   },
   plugins: [],
 };

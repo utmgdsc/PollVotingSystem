@@ -14,7 +14,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "typeRoots": ["additional.d.ts"]
   },
-  "include": ["src"]
+  "include": ["src", "additional.d.ts"]
 }
