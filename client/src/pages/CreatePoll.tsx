@@ -2,34 +2,21 @@ import React, { useState } from "react";
 import { FormInput } from "../components/FormInput";
 import { Button } from "../components/Button";
 import { Header } from "../components/Header";
+import { useHistory } from "react-router-dom";
 
 interface NewPoll {
   name: string;
   description: string;
   courseCode: string;
-  questions: PollQuestion[];
 }
 
-interface PollQuestion {
-  question: string;
-  numOptions: number;
-}
+type pollOption = "courseCode" | "name" | "description";
 
 export const CreatePoll = () => {
   const initialState: NewPoll = {
     name: "",
     description: "",
     courseCode: "",
-    questions: [
-      {
-        question: "What's the runtime of the function?",
-        numOptions: 5,
-      },
-      {
-        question: "What is the distance from Earth to the Sun?",
-        numOptions: 3,
-      },
-    ],
   };
 
   const [pollConfig, updatePollConfig] = useState(initialState);
@@ -39,10 +26,7 @@ export const CreatePoll = () => {
     courseCode: ["Course Code", "Course Code"],
   };
 
-  const handler = (
-    a: string,
-    pollOption: "courseCode" | "name" | "description"
-  ) => {
+  const handler = (a: string, pollOption: pollOption) => {
     const newPollConfig = { ...pollConfig };
     newPollConfig[pollOption] = a;
     console.log(newPollConfig);
@@ -51,7 +35,7 @@ export const CreatePoll = () => {
 
   const pollInputs = (
     Object.keys(pollOptions) as Array<keyof typeof pollOptions>
-  ).map((pollOption, idx) => {
+  ).map((pollOption: pollOption, idx) => {
     const header = pollOptions[pollOption][0];
     const placeholder = pollOptions[pollOption][1];
     return (
@@ -65,15 +49,17 @@ export const CreatePoll = () => {
     );
   });
 
+  const history = useHistory();
   return (
     <div className={"flex flex-col"}>
-      <div className={"mb-24"}>
+      <div className={"mb-14"}>
         <Header text={"Create Poll"} />
         {pollInputs}
       </div>
-      <div className={"mt-50"}>
-        <Button value={"Create Poll"} />
-      </div>
+      <Button
+        value={"Create Poll"}
+        onClick={() => history.push("/votecontrols")}
+      />
     </div>
   );
 };

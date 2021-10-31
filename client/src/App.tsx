@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { JoinPoll } from "./pages/JoinPoll";
 import { VotePage } from "./pages/VotePage";
 import { CreatePoll } from "./pages/CreatePoll";
+import { ProfHome } from "./pages/ProfHome";
+import { VoteControls } from "./pages/VoteControls";
 
 const App = () => {
   const arr: Array<Option> = [
@@ -18,9 +20,15 @@ const App = () => {
   ];
 
   return (
-    <div className={"h-screen bg-background"}>
+    <div
+      className={"flex flex-col border-2 border-red-600 bg-background h-full"}
+    >
       <Navbar options={arr} />
-      <div className={"flex justify-center items-center"}>
+      <div
+        className={
+          "flex h-full border-4 border-blue-600 justify-center items-center"
+        }
+      >
         <BrowserRouter>
           <Switch>
             <Route exact path={"/vote"}>
@@ -28,6 +36,12 @@ const App = () => {
             </Route>
             <Route exact path={"/createpoll"}>
               <CreatePoll />
+            </Route>
+            <Route exact path={"/prof"}>
+              <ProfHome />
+            </Route>
+            <Route exact path={"/votecontrols"}>
+              <VoteControls />
             </Route>
             <Route path={"/"}>
               <Redirect to={"/"}></Redirect>
