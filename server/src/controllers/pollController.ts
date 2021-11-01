@@ -1,6 +1,7 @@
 import { Poll } from "../db/schema";
 import { PollModel } from "../db/mogoose";
-import { rooms, io } from "../socket";
+import { io } from "../socket";
+import { client } from "../redis";
 
 async function createPoll(poll: Poll) {
   try {
@@ -22,9 +23,7 @@ async function createPoll(poll: Poll) {
 
 async function changePollStatus(pollId: string, hasStarted: boolean) {
   try {
-    if (rooms[pollId] === hasStarted) return;
-    rooms[pollId] = hasStarted;
-    console.log(rooms);
+    await client.set(pollId, hasStarted.toString());
     io.to(pollId).emit("pollStarted", hasStarted);
   } catch (err) {
     /**

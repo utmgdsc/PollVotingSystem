@@ -1,21 +1,28 @@
 import { PollModel } from "../db/mogoose";
-import { rooms, io } from "../socket";
+import { io } from "../socket";
 import { Socket } from "socket.io";
+import { client } from "../redis";
 
-function join(socket: Socket, pollId: string) {
-  console.log(`join: ${socket.id}`);
-  if (!(pollId in rooms)) {
-    io.to(socket.id).emit("error", { message: "No such poll" });
-    return;
+async function join(socket: Socket, pollId: string) {
+  try {
+    console.log(`join: ${socket.id}`);
+    const hasStarted = await client.get(pollId);
+    console.log(hasStarted);
+    if (hasStarted.localeCompare(true.toString()) !== 0) {
+      throw { message: "No such poll" };
+    }
+
+    // ensure that socket is connected to 1 room (other than the default room)
+    socket.rooms.forEach((room) => {
+      if (room !== socket.id) socket.leave(room);
+    });
+
+    socket.join(pollId);
+    io.to(socket.id).emit("pollStarted", hasStarted);
+  } catch (err) {
+    console.log(err);
+    io.to(socket.id).emit("error", err);
   }
-
-  // ensure that socket is connected to 1 room (other than the default room)
-  socket.rooms.forEach((room) => {
-    if (room !== socket.id) socket.leave(room);
-  });
-
-  socket.join(pollId);
-  io.to(socket.id).emit("pollStarted", Boolean(rooms[pollId]));
 }
 
 async function vote(socket: Socket, answer: number, utorid: string) {
@@ -25,7 +32,11 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     /**
      * TODO: Validate input
      */
-    if (!rooms[pollId]) throw { message: "Question not live yet" };
+    const hasStarted = await client.get(pollId);
+    console.log(hasStarted);
+    if (hasStarted.localeCompare(true.toString()) !== 0) {
+      throw { message: "Question not live yet" };
+    }
 
     await PollModel.updateOne(
       {
