@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createPoll, endPoll, startPoll } from "../controllers/pollController";
+import { changePollStatus, createPoll } from "../controllers/pollController";
 
 const pollRouter = Router();
 
 pollRouter.post("/", async (req, res) => {
-  const { name, description, courseCode, questions } = req.body;
+  const { name, description, courseCode, options } = req.body;
   try {
     const poll = {
       name,
       description,
       courseCode,
-      questions,
+      options,
       created: new Date(),
     };
     const result = await createPoll(poll);
@@ -21,27 +21,15 @@ pollRouter.post("/", async (req, res) => {
   }
 });
 
-pollRouter.patch("/:pollId/start", async (req, res) => {
+pollRouter.patch("/:pollId", async (req, res) => {
   const { pollId } = req.params;
-  const { questionId } = req.body;
+  const { hasStarted } = req.body;
   try {
-    await startPoll(pollId, questionId);
-    return res.send({ message: "Poll successfully started" });
+    await changePollStatus(pollId, hasStarted);
+    return res.send({ message: "Poll status successfully changed" });
   } catch (err) {
     console.log(err);
-    return res.status(500).send({ message: "Poll failed to start" });
-  }
-});
-
-pollRouter.patch("/:pollId/end", async (req, res) => {
-  const { pollId } = req.params;
-  const { questionId } = req.body;
-  try {
-    await endPoll(pollId, questionId);
-    return res.send({ message: "Poll successfully ended" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send({ message: "Poll failed to end" });
+    return res.status(500).send({ message: "Failed to change poll status" });
   }
 });
 
