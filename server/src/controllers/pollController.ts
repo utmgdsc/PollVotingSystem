@@ -3,6 +3,9 @@ import { PollModel } from "../db/mogoose";
 import { io } from "../socket";
 import { client } from "../redis";
 
+// set poll code expiry to 1 day
+const expiry = 60 * 60 * 24;
+
 // generate a random number between min to max
 function randomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -50,7 +53,7 @@ async function createPoll(poll: Poll) {
     const result = await Promise.all(promise);
     const pollId = result[1]["_id"].toString();
     const pollCode = result[0];
-    await client.set(pollCode, pollId);
+    await client.set(pollCode, pollId, { EX: expiry, NX: true });
 
     return { pollCode, pollId };
   } catch (err) {
@@ -63,7 +66,7 @@ async function createPoll(poll: Poll) {
 
 async function changePollStatus(pollId: string, hasStarted: boolean) {
   try {
-    await client.set(pollId, hasStarted.toString());
+    await client.set(pollId, hasStarted.toString(), { EX: expiry, NX: true });
     io.to(pollId).emit("pollStarted", hasStarted);
   } catch (err) {
     /**
