@@ -5,5 +5,5 @@ interface HeaderProps {
 }
 
 export const Header = ({ text }: HeaderProps) => {
-  return <div className={"text-3xl text-center py-2 my-3"}>{text}</div>;
+  return <div className={"text-2xl text-center py-2 my-3"}>{text}</div>;
 };

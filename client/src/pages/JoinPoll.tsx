@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Button } from "../components/Button";
 import { FormInput } from "../components/FormInput";
 import { Header } from "../components/Header";
+import { useHistory } from "react-router-dom";
 
 export const JoinPoll = () => {
+  const history = useHistory();
   const [pollCode, setPollCode] = useState("");
 
   const joinPollRoom = () => {
@@ -12,7 +14,7 @@ export const JoinPoll = () => {
   };
 
   return (
-    <div className={"block text-center mt-96 px-5"}>
+    <div className={"border-4 border-green-600 block text-center px-5"}>
       <Header text={"MCS PollVoting"} />
       <div className={"flex flex-col"}>
         <FormInput
@@ -20,7 +22,7 @@ export const JoinPoll = () => {
           onChangeHandler={(e) => setPollCode(e)}
           pollValue={pollCode}
         />
-        <Button value={"Enter"} />
+        <Button value={"Enter"} onClick={() => history.push("/vote")} />
       </div>
     </div>
   );

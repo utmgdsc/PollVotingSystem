@@ -20,9 +20,9 @@ export const Navbar = ({ options }: NavbarProps) => {
     );
   });
   return (
-    <nav className={"text-xl px-2 py-2 text-white bg-primary flex"}>
+    <div className={"flex text-xl px-2 py-2 text-white bg-primary"}>
       <a href={"/"}>MCS PollVoting</a>
       <ul className={"flex ml-auto"}>{optionLinks}</ul>
-    </nav>
+    </div>
   );
 };
