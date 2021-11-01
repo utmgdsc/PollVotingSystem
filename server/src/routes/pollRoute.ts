@@ -4,13 +4,13 @@ import { createPoll, endPoll, startPoll } from "../controllers/pollController";
 const pollRouter = Router();
 
 pollRouter.post("/", async (req, res) => {
-  const { name, description, courseCode, questions } = req.body;
+  const { name, description, courseCode, options } = req.body;
   try {
     const poll = {
       name,
       description,
       courseCode,
-      questions,
+      options,
       created: new Date(),
     };
     const result = await createPoll(poll);
@@ -23,9 +23,8 @@ pollRouter.post("/", async (req, res) => {
 
 pollRouter.patch("/:pollId/start", async (req, res) => {
   const { pollId } = req.params;
-  const { questionId } = req.body;
   try {
-    await startPoll(pollId, questionId);
+    await startPoll(pollId);
     return res.send({ message: "Poll successfully started" });
   } catch (err) {
     console.log(err);
@@ -35,9 +34,8 @@ pollRouter.patch("/:pollId/start", async (req, res) => {
 
 pollRouter.patch("/:pollId/end", async (req, res) => {
   const { pollId } = req.params;
-  const { questionId } = req.body;
   try {
-    await endPoll(pollId, questionId);
+    await endPoll(pollId);
     return res.send({ message: "Poll successfully ended" });
   } catch (err) {
     console.log(err);

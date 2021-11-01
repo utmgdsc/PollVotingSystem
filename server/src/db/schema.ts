@@ -2,18 +2,18 @@ import { Schema, Document } from "mongoose";
 
 /**
  * student subdocument. Used as nested objects in PollResults schema
- * studentId: unique student id to identify the the student possibly the student number
+ * utorid: unique student id to identify the the student possibly the student utorid
  * answers: array of answer subdocument
  */
 export interface Student {
-  studentId: string;
+  utorid: string;
   answer: number;
   timestamp: Date;
 }
 
 const student = new Schema<Student>(
   {
-    studentId: {
+    utorid: {
       type: String,
       required: true,
     },
@@ -46,8 +46,6 @@ export interface Poll {
   courseCode: string;
   created: Date;
   options?: number;
-  started?: Date;
-  ended?: Date;
   students?: Student[];
 }
 
@@ -59,7 +57,5 @@ export const pollSchema = new Schema<PollDocument>({
   courseCode: { type: String, required: true },
   created: { type: Date, required: true },
   options: Number,
-  started: Date,
-  ended: Date,
   students: [student],
 });

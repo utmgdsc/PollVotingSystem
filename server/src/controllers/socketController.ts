@@ -18,7 +18,7 @@ function join(socket: Socket, pollId: string) {
   io.to(socket.id).emit("pollStarted", Boolean(rooms[pollId]));
 }
 
-async function vote(socket: Socket, answer: number, studentId: string) {
+async function vote(socket: Socket, answer: number, utorid: string) {
   try {
     console.log(`vote: ${socket.id}`);
     let pollId = socket.data.pollId;
@@ -34,7 +34,7 @@ async function vote(socket: Socket, answer: number, studentId: string) {
       {
         $addToSet: {
           students: {
-            studentId,
+            utorid,
             answer,
             timestamp: new Date(),
           },

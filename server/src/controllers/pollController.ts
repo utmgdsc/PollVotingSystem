@@ -24,12 +24,6 @@ async function startPoll(pollId: string) {
   try {
     if (rooms[pollId]) return;
     rooms[pollId] = true;
-    await PollModel.updateOne(
-      {
-        _id: pollId,
-      },
-      { $min: { started: new Date() } }
-    );
     io.to(pollId).emit("pollStarted", true);
   } catch (err) {
     /**
@@ -43,12 +37,6 @@ async function endPoll(pollId: string) {
   try {
     if (!rooms[pollId]) return;
     rooms[pollId] = false;
-    await PollModel.updateOne(
-      {
-        _id: pollId,
-      },
-      { $max: { ended: new Date() } }
-    );
     io.to(pollId).emit("pollStarted", false);
   } catch (err) {
     /**
