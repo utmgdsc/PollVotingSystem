@@ -9,7 +9,7 @@ import { vote, join } from "./controllers/socketController";
 /**
  * TODO: shift to redis
  */
-const rooms: Record<string, Record<string, number>> = {};
+const rooms: Record<string, boolean> = {};
 
 const io = new Server({
   // cors: {
@@ -24,15 +24,12 @@ io.on("connection", (socket: Socket) => {
   // let the socket join rooms once connected
   socket.on("join", (pollId: string) => {
     join(socket, pollId);
+    socket.data["pollId"] = pollId;
+    // let the socket vote in the connected room
+    socket.on("vote", async (answer: number, utorid: string) => {
+      await vote(socket, answer, utorid);
+    });
   });
-
-  // let the socket vote in the connected room
-  socket.on(
-    "vote",
-    async (questionId: number, answer: number, studentId: string) => {
-      await vote(socket, questionId, answer, studentId);
-    }
-  );
 });
 
 export { io, rooms };
