@@ -1,4 +1,4 @@
-import { PollResultsModel } from "../db/mogoose";
+import { PollModel } from "../db/mogoose";
 import { rooms, io } from "../socket";
 import { Socket } from "socket.io";
 
@@ -15,48 +15,21 @@ function join(socket: Socket, pollId: string) {
   });
 
   socket.join(pollId);
-  io.to(socket.id).emit("start", {
-    questionId: rooms[pollId].currentQuestion,
-  });
+  io.to(socket.id).emit("pollStarted", Boolean(rooms[pollId]));
 }
 
-async function vote(
-  socket: Socket,
-  questionId: number,
-  answer: number,
-  studentId: string
-) {
+async function vote(socket: Socket, answer: number, studentId: string) {
   try {
     console.log(`vote: ${socket.id}`);
-    let pollId = "";
-    console.log(socket.rooms);
-    socket.rooms.forEach((room) => {
-      console.log(room);
-      if (room !== socket.id) pollId = room;
-    });
-    if (pollId === "") throw { message: "Not connected to room" };
+    let pollId = socket.data.pollId;
     /**
      * TODO: Validate input
      */
-    if (rooms[pollId].currentQuestion !== questionId)
-      throw { message: "Question not live yet" };
+    if (!rooms[pollId]) throw { message: "Question not live yet" };
 
-    await PollResultsModel.updateOne(
+    await PollModel.updateOne(
       {
-        pollId,
-        questionId,
-      },
-      {
-        $pull: {
-          studentId,
-        },
-      }
-    );
-
-    await PollResultsModel.updateOne(
-      {
-        pollId: pollId,
-        questionId: questionId,
+        _id: pollId,
       },
       {
         $addToSet: {
