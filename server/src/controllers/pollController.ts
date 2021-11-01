@@ -20,11 +20,12 @@ async function createPoll(poll: Poll) {
   }
 }
 
-async function startPoll(pollId: string) {
+async function changePollStatus(pollId: string, hasStarted: boolean) {
   try {
-    if (rooms[pollId]) return;
-    rooms[pollId] = true;
-    io.to(pollId).emit("pollStarted", true);
+    if (rooms[pollId] === hasStarted) return;
+    rooms[pollId] = hasStarted;
+    console.log(rooms);
+    io.to(pollId).emit("pollStarted", hasStarted);
   } catch (err) {
     /**
      * TODO: Add error handler
@@ -33,17 +34,4 @@ async function startPoll(pollId: string) {
   }
 }
 
-async function endPoll(pollId: string) {
-  try {
-    if (!rooms[pollId]) return;
-    rooms[pollId] = false;
-    io.to(pollId).emit("pollStarted", false);
-  } catch (err) {
-    /**
-     * TODO: Add error handler
-     */
-    throw err;
-  }
-}
-
-export { createPoll, startPoll, endPoll };
+export { createPoll, changePollStatus };
