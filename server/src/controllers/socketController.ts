@@ -3,12 +3,12 @@ import { io } from "../socket";
 import { Socket } from "socket.io";
 import { client } from "../redis";
 
-async function join(socket: Socket, pollId: string) {
+async function join(socket: Socket, pollCode: string) {
   try {
     console.log(`join: ${socket.id}`);
-    const hasStarted = await client.get(pollId);
-    console.log(hasStarted);
-    if (hasStarted.localeCompare(true.toString()) !== 0) {
+    const pollId = await client.get(pollCode);
+    console.log(pollId);
+    if (pollId === null) {
       throw { message: "No such poll" };
     }
 
@@ -16,8 +16,10 @@ async function join(socket: Socket, pollId: string) {
     socket.rooms.forEach((room) => {
       if (room !== socket.id) socket.leave(room);
     });
-
+    const hasStarted = await client.get(pollId);
+    console.log(hasStarted);
     socket.join(pollId);
+    socket.data["pollId"] = pollId;
     io.to(socket.id).emit("pollStarted", hasStarted);
   } catch (err) {
     console.log(err);

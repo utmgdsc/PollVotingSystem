@@ -13,9 +13,9 @@ io.on("connection", (socket: Socket) => {
   console.log(`connect: ${socket.id}`);
 
   // let the socket join rooms once connected
-  socket.on("join", async (pollId: string) => {
-    await join(socket, pollId);
-    socket.data["pollId"] = pollId;
+  socket.on("join", async (pollCode: string) => {
+    await join(socket, pollCode);
+
     // let the socket vote in the connected room
     socket.on("vote", async (answer: number, utorid: string) => {
       await vote(socket, answer, utorid);
