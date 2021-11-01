@@ -66,7 +66,9 @@ async function createPoll(poll: Poll) {
 
 async function changePollStatus(pollId: string, hasStarted: boolean) {
   try {
-    await client.set(pollId, hasStarted.toString(), { EX: expiry, NX: true });
+    await client.set(pollId, hasStarted.toString(), {
+      EX: expiry,
+    });
     io.to(pollId).emit("pollStarted", hasStarted);
   } catch (err) {
     /**
