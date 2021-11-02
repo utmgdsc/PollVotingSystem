@@ -34,7 +34,7 @@ services:
     networks:
       - backend
     ports:
-      - "5000:5000"
+      - "3000:5000"
   voteapi:
     container_name: voteapi
     build:
