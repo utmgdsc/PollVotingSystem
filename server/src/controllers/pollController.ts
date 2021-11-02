@@ -78,4 +78,34 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
   }
 }
 
-export { createPoll, changePollStatus };
+async function getStudents(courseCode: string, startTime: Date, endTime: Date){
+  try {
+    let responseArray: { pollID: any; pollName: string; courseCode: string; utorid: string; answer: number; timestamp: Date; }[] = [];
+
+    const result = await Promise.all([PollModel.find({"courseCode": courseCode})]);
+    result[0].forEach((poll) => {
+      poll.students.forEach((student) => {
+        if((student.timestamp.getTime() >= startTime.getTime()) && (student.timestamp.getTime() <= endTime.getTime())){
+          const studentResponse = {
+            pollID: poll._id.toString(),
+            pollName: poll.name,
+            courseCode: poll.courseCode,
+            utorid: student.utorid,
+            answer: student.answer,
+            timestamp: student.timestamp
+          };
+          responseArray.push(studentResponse);
+        }
+      });
+    });
+    return {responses: responseArray};
+    
+  } catch (err) {
+          /**
+     * TODO: Add error handler
+     */
+    throw err;
+    }
+}
+
+export { createPoll, changePollStatus, getStudents };
