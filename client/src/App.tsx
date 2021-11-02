@@ -20,15 +20,9 @@ const App = () => {
   ];
 
   return (
-    <div
-      className={"flex flex-col border-2 border-red-600 bg-background h-full"}
-    >
+    <div className={"flex flex-col bg-background h-full"}>
       <Navbar options={arr} />
-      <div
-        className={
-          "flex h-full border-4 border-blue-600 justify-center items-center"
-        }
-      >
+      <div className={"flex h-full justify-center items-center"}>
         <BrowserRouter>
           <Switch>
             <Route exact path={"/vote"}>
