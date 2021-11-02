@@ -14,7 +14,7 @@ export const JoinPoll = () => {
   };
 
   return (
-    <div className={"border-4 border-green-600 block text-center px-5"}>
+    <div className={"block text-center px-5"}>
       <Header text={"MCS PollVoting"} />
       <div className={"flex flex-col"}>
         <FormInput

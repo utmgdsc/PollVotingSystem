@@ -14,10 +14,10 @@ pollRouter.post("/", async (req, res) => {
       created: new Date(),
     };
     const result = await createPoll(poll);
-    return res.status(201).send(result);
+    return res.status(result.status).send(result.data);
   } catch (err) {
     console.log(err);
-    return res.status(500).send({ message: "Poll creation failed" });
+    return res.status(500).send({ message: "Internal Server Error" });
   }
 });
 
@@ -25,11 +25,11 @@ pollRouter.patch("/:pollId", async (req, res) => {
   const { pollId } = req.params;
   const { hasStarted } = req.body;
   try {
-    await changePollStatus(pollId, hasStarted);
-    return res.send({ message: "Poll status successfully changed" });
+    const result = await changePollStatus(pollId, hasStarted);
+    return res.status(result.status).send(result.data);
   } catch (err) {
     console.log(err);
-    return res.status(500).send({ message: "Failed to change poll status" });
+    return res.status(500).send({ message: "Internal Server Error" });
   }
 });
 
