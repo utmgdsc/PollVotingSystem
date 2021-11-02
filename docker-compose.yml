@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  caching:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    volumes:
+      - RedisVolume:/data
+    command: redis-server --requirepass password
+  mongodb:
+    container_name: mongo
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: quiz
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+    volumes:
+      - MongodbVolume:/data/db
+  frontend:
+    container_name: frontend
+    restart: unless-stopped
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    depends_on:
+      - voteapi
+    networks:
+      - backend
+    ports:
+      - "5000:5000"
+  voteapi:
+    container_name: voteapi
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - backend
+    depends_on:
+      - mongodb
+      - caching
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./server/.env
+    environment:
+      - TZ=America/New_York
+volumes:
+    RedisVolume:
+    MongodbVolume:
+networks:
+  backend:
+    driver: "bridge"
