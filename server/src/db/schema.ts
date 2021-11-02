@@ -41,7 +41,7 @@ const student = new Schema<Student>(
  * ended: when did this quiz end
  */
 export interface Poll {
-  name: string;
+  name?: string;
   description?: string;
   courseCode: string;
   created: Date;
@@ -52,7 +52,7 @@ export interface Poll {
 export interface PollDocument extends Poll, Document {}
 
 export const pollSchema = new Schema<PollDocument>({
-  name: { type: String, required: true },
+  name: String,
   description: String,
   courseCode: { type: String, required: true },
   created: { type: Date, required: true },
