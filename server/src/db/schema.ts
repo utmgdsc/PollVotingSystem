@@ -1,4 +1,4 @@
-import { Schema, Document } from "mongoose";
+import { Schema, Document, Types } from "mongoose";
 
 /**
  * student subdocument. Used as nested objects in PollResults schema
@@ -59,3 +59,5 @@ export const pollSchema = new Schema<PollDocument>({
   options: Number,
   students: [student],
 });
+
+export const ObjectId = Types.ObjectId;

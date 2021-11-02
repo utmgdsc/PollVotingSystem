@@ -2,6 +2,7 @@ import { PollModel } from "../db/mogoose";
 import { io } from "../socket";
 import { Socket } from "socket.io";
 import { client } from "../redis";
+import { ObjectId } from "../db/schema";
 
 async function join(socket: Socket, pollCode: string) {
   try {
@@ -24,6 +25,19 @@ async function join(socket: Socket, pollCode: string) {
   } catch (err) {
     console.log(err);
     io.to(socket.id).emit("error", err);
+  }
+}
+
+async function result(pollId: string) {
+  try {
+    const result = await PollModel.aggregate([
+      { $match: { _id: new ObjectId(pollId) } },
+      { $unwind: "$students" },
+      { $group: { _id: "$students.answer", count: { $sum: 1 } } },
+    ]);
+    return result;
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -54,6 +68,9 @@ async function vote(socket: Socket, answer: number, utorid: string) {
         },
       }
     );
+    result(pollId).then((data) => {
+      io.to(pollId).emit("result", data);
+    });
     return;
   } catch (err) {
     console.log(err);
