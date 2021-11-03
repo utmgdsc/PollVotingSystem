@@ -7,11 +7,11 @@ import { ObjectId } from "../db/schema";
 async function join(socket: Socket, pollCode: string) {
   try {
     console.log(`join: ${socket.id}`);
+    if (pollCode === null || pollCode === undefined)
+      throw { code: 1, message: "Invalid poll code" };
     const pollId = await client.get(pollCode);
     console.log(pollId);
-    if (pollId === null) {
-      throw { message: "No such poll" };
-    }
+    if (pollId === null) throw { code: 1, message: "Invalid poll code" };
 
     // ensure that socket is connected to 1 room (other than the default room)
     socket.rooms.forEach((room) => {
@@ -46,10 +46,7 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     console.log(`vote: ${socket.id}`);
     let pollId = socket.data.pollId;
     if (pollId === null || pollId === undefined)
-      throw { message: "haven't joined any room" };
-    /**
-     * TODO: Validate input
-     */
+      throw { code: 1, message: "haven't joined any room" };
     const hasStarted = await client.get(pollId);
     console.log(hasStarted);
     if (
@@ -57,8 +54,13 @@ async function vote(socket: Socket, answer: number, utorid: string) {
       hasStarted === undefined ||
       hasStarted.localeCompare(true.toString()) !== 0
     ) {
-      throw { message: "Question not live yet" };
+      throw { code: 2, message: "Poll not live yet" };
     }
+
+    if (utorid === undefined || utorid === null)
+      throw { code: 1, message: "Invalid utorid" };
+    if (answer === undefined || answer === null)
+      throw { code: 2, message: "Invalid answer" };
 
     await PollModel.updateOne(
       {
