@@ -45,12 +45,18 @@ async function vote(socket: Socket, answer: number, utorid: string) {
   try {
     console.log(`vote: ${socket.id}`);
     let pollId = socket.data.pollId;
+    if (pollId === null || pollId === undefined)
+      throw { message: "haven't joined any room" };
     /**
      * TODO: Validate input
      */
     const hasStarted = await client.get(pollId);
     console.log(hasStarted);
-    if (hasStarted.localeCompare(true.toString()) !== 0) {
+    if (
+      hasStarted === null ||
+      hasStarted === undefined ||
+      hasStarted.localeCompare(true.toString()) !== 0
+    ) {
       throw { message: "Question not live yet" };
     }
 
