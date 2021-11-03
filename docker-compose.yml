@@ -23,35 +23,6 @@ services:
       - backend
     volumes:
       - MongodbVolume:/data/db
-  frontend:
-    container_name: frontend
-    restart: unless-stopped
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    depends_on:
-      - voteapi
-    networks:
-      - backend
-    ports:
-      - "3000:5000"
-  voteapi:
-    container_name: voteapi
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    networks:
-      - backend
-    depends_on:
-      - mongodb
-      - caching
-    ports:
-      - "3001:3001"
-    env_file:
-      - ./server/.env
-    environment:
-      - TZ=America/New_York
 volumes:
     RedisVolume:
     MongodbVolume:

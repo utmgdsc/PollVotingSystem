@@ -13,5 +13,5 @@ export const PollCode = ({ code }: PollCodeInterface) => {
     }
     return segments;
   };
-  return <div className={"flex justify-center"}>{pollCodeSegments()}</div>;
+  return <div className={"flex justify-center mb-4"}>{pollCodeSegments()}</div>;
 };

@@ -6,6 +6,7 @@ import { VotePage } from "./pages/VotePage";
 import { CreatePoll } from "./pages/CreatePoll";
 import { ProfHome } from "./pages/ProfHome";
 import { VoteControls } from "./pages/VoteControls";
+import Cookies from "universal-cookie";
 
 const App = () => {
   const arr: Array<Option> = [
@@ -19,6 +20,8 @@ const App = () => {
     },
   ];
 
+  const cookies = new Cookies();
+
   return (
     <div className={"flex flex-col bg-background h-full"}>
       <Navbar options={arr} />
@@ -29,6 +32,8 @@ const App = () => {
               <VotePage />
             </Route>
             <Route exact path={"/createpoll"}>
+              {cookies.remove("pollId")}
+              {cookies.remove("pollCode")}
               <CreatePoll />
             </Route>
             <Route exact path={"/prof"}>
@@ -49,3 +54,5 @@ const App = () => {
 };
 
 export default App;
+
+//              {/*{cookies.get("pollCode") === undefined || cookies.get("pollId") === undefined ? <Redirect to={"/"}></Redirect> : <VoteControls />}*/}
