@@ -93,4 +93,19 @@ async function getResult(pollId: any) {
   return { status: 200, data: { result } };
 }
 
-export { createPoll, changePollStatus, getStudents, getPollStatus, getResult };
+async function endForever(pollId: string) {
+  if (pollId === null || pollId === undefined)
+    return { status: 400, data: { message: "Invalid poll Id" } };
+  await client.del(pollId);
+  io.to(pollId).emit("close", { message: "Poll is over" });
+  return { status: 200, data: { message: "Poll closed" } };
+}
+
+export {
+  createPoll,
+  changePollStatus,
+  getStudents,
+  getPollStatus,
+  getResult,
+  endForever,
+};
