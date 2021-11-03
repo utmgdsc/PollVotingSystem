@@ -28,7 +28,7 @@ async function join(socket: Socket, pollCode: string) {
   }
 }
 
-async function result(pollId: string) {
+async function pollResult(pollId: string) {
   try {
     const result = await PollModel.aggregate([
       { $match: { _id: new ObjectId(pollId) } },
@@ -76,7 +76,7 @@ async function vote(socket: Socket, answer: number, utorid: string) {
         },
       }
     );
-    result(pollId).then((data) => {
+    pollResult(pollId).then((data) => {
       io.to(pollId).emit("result", data);
     });
     return;
@@ -86,4 +86,4 @@ async function vote(socket: Socket, answer: number, utorid: string) {
   }
 }
 
-export { vote, join };
+export { vote, join, pollResult };

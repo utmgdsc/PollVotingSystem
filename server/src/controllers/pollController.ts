@@ -3,6 +3,7 @@ import { PollModel } from "../db/mogoose";
 import { io } from "../socket";
 import { client } from "../redis";
 import { customAlphabet } from "nanoid/async";
+import { pollResult } from "./socketController";
 const nanoid = customAlphabet(
   "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890",
   6
@@ -36,34 +37,60 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
   return { status: 200, data: { message: "poll status successfully changed" } };
 }
 
-async function getStudents(courseCode: string, startTime: Date, endTime: Date){
+async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
   try {
-    let responseArray: { pollID: any; pollName: string; courseCode: string; utorid: string; answer: number; timestamp: Date; }[] = [];
+    let responseArray: {
+      pollID: any;
+      pollName: string;
+      courseCode: string;
+      utorid: string;
+      answer: number;
+      timestamp: Date;
+    }[] = [];
 
-    const result = await Promise.all([PollModel.find({"courseCode": courseCode})]);
+    const result = await Promise.all([
+      PollModel.find({ courseCode: courseCode }),
+    ]);
     result[0].forEach((poll) => {
       poll.students.forEach((student) => {
-        if((student.timestamp.getTime() >= startTime.getTime()) && (student.timestamp.getTime() <= endTime.getTime())){
+        if (
+          student.timestamp.getTime() >= startTime.getTime() &&
+          student.timestamp.getTime() <= endTime.getTime()
+        ) {
           const studentResponse = {
             pollID: poll._id.toString(),
             pollName: poll.name,
             courseCode: poll.courseCode,
             utorid: student.utorid,
             answer: student.answer,
-            timestamp: student.timestamp
+            timestamp: student.timestamp,
           };
           responseArray.push(studentResponse);
         }
       });
     });
-    return {responses: responseArray};
-    
+    return { responses: responseArray };
   } catch (err) {
-          /**
+    /**
      * TODO: Add error handler
      */
     throw err;
-    }
+  }
 }
 
-export { createPoll, changePollStatus, getStudents };
+async function getPollStatus(pollId: any) {
+  if (pollId === null || pollId === undefined || typeof pollId !== "string")
+    return { status: 400, data: { message: "Invalid poll Id" } };
+  const result = await client.get(pollId);
+  const pollStarted = result === null ? false : true;
+  return { status: 200, data: { pollStarted } };
+}
+
+async function getResult(pollId: any) {
+  if (pollId === null || pollId === undefined || typeof pollId !== "string")
+    return { status: 400, data: { message: "Invalid poll Id" } };
+  const result = await pollResult(pollId);
+  return { status: 200, data: { result } };
+}
+
+export { createPoll, changePollStatus, getStudents, getPollStatus, getResult };
