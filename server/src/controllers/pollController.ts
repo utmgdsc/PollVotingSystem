@@ -97,6 +97,7 @@ async function endForever(pollId: string) {
   if (pollId === null || pollId === undefined)
     return { status: 400, data: { message: "Invalid poll Id" } };
   await client.del(pollId);
+  io.to(pollId).emit("end", true);
   io.of("/").in(pollId).disconnectSockets();
   return { status: 200, data: { message: "Poll closed" } };
 }
