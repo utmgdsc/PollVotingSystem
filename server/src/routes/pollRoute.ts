@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { changePollStatus, createPoll, getStudents} from "../controllers/pollController";
+import {
+  changePollStatus,
+  createPoll,
+  getPollStatus,
+  getResult,
+  getStudents,
+} from "../controllers/pollController";
 
 const pollRouter = Router();
 
@@ -34,13 +40,37 @@ pollRouter.patch("/:pollId", async (req, res) => {
 });
 
 pollRouter.get("/students/:courseCode", async (req, res) => {
-  const{ courseCode} = req.params;
+  const { courseCode } = req.params;
   const { startTime, endTime } = req.body;
   try {
-    const result = await getStudents(courseCode, new Date(startTime) , new Date(endTime));
+    const result = await getStudents(
+      courseCode,
+      new Date(startTime),
+      new Date(endTime)
+    );
     return res.status(200).send(result);
-  } catch (err){
+  } catch (err) {
     return res.status(500).send({ message: "Failed to find students" });
+  }
+});
+
+pollRouter.get("/status", async (req, res) => {
+  const { pollId } = req.query;
+  try {
+    const result = await getPollStatus(pollId);
+    return res.status(result.status).send(result.data);
+  } catch (err) {
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+pollRouter.get("/result", async (req, res) => {
+  const { pollId } = req.query;
+  try {
+    const result = await getResult(pollId);
+    return res.status(result.status).send(result.data);
+  } catch (err) {
+    return res.status(500).send({ message: "Internal Server Error" });
   }
 });
 
