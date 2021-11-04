@@ -93,10 +93,11 @@ async function getResult(pollId: any) {
   return { status: 200, data: { result } };
 }
 
-async function endForever(pollId: string) {
-  if (pollId === null || pollId === undefined)
-    return { status: 400, data: { message: "Invalid poll Id" } };
-  await client.del(pollId);
+async function endForever(pollCode: string) {
+  if (pollCode === null || pollCode === undefined)
+    return { status: 400, data: { message: "Invalid poll code" } };
+  const pollId = await client.get(pollCode);
+  await Promise.all([client.del(pollCode), client.del(pollId)]);
   io.to(pollId).emit("end", true);
   io.of("/").in(pollId).disconnectSockets();
   return { status: 200, data: { message: "Poll closed" } };
