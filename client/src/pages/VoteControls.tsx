@@ -20,13 +20,14 @@ export const VoteControls = () => {
   const history = useHistory();
   const cookies = new Cookies();
   const pollCode = cookies.get(pollCodeCookie);
+  const pollId = cookies.get(pollIdCookie);
   const [copyStatus, setCopyStatus] = useState("Copy Code");
   // const [connected, setConnected] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [voteData, setVoteData] = useState([0, 0, 0, 0, 0]);
   const [pollStatus, setPollStatus] = useState({
-    status: "Active",
-    disabled: true,
+    status: "Inactive",
+    pollStarted: false,
   });
 
   if (pollCode === undefined) {
@@ -35,6 +36,49 @@ export const VoteControls = () => {
   const socket = io("http://localhost:3001", { withCredentials: true });
 
   useEffect(() => {
+    const fetchPollStatus = async () => {
+      await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
+        // console.log(res.data.pollStarted);
+        // console.log(pollStatus.pollStarted)
+        // console.log("Old Status", res);
+        const pollStarted = res.data.pollStarted;
+        if (pollStarted !== pollStatus.pollStarted) {
+          const newStatus = { ...pollStatus };
+          newStatus.pollStarted = pollStarted;
+          newStatus.status = pollStarted ? "Inactive" : "Active";
+          setPollStatus(newStatus);
+          // console.log("New Status", newStatus);
+        } else {
+          console.log(
+            "Same, no update",
+            pollStarted === pollStatus.pollStarted
+          );
+        }
+      });
+    };
+    fetchPollStatus();
+
+    const fetchPollResults = async () => {
+      await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
+        const pollResults = res.data.result;
+        console.log("Old Poll Data", voteData);
+        console.log(pollResults);
+        let setData = false;
+        const newVoteData = [...voteData];
+        for (let i = 0; i < pollResults.length; i++) {
+          if (pollResults[i].count !== voteData[pollResults[i]._id - 1]) {
+            newVoteData[pollResults[i]._id - 1] = pollResults[i].count;
+            setData = true;
+          }
+        }
+        if (setData) {
+          setVoteData(newVoteData);
+          console.log("New Poll Data", newVoteData);
+        }
+      });
+    };
+    fetchPollResults();
+
     socket.on("connect", () => {
       console.log("Connected");
       socket.emit("join", pollCode);
@@ -56,14 +100,14 @@ export const VoteControls = () => {
     return () => {
       socket.disconnect();
     };
-  }, [socket]);
+  }, [pollStatus, voteData]);
 
   const pollControlHandler = (controlOption: string) => {
     switch (controlOption) {
       case "start":
         instance
           .patch(`/poll/${cookies.get(pollIdCookie)}`, { hasStarted: true })
-          .then(() => setPollStatus({ status: "Active", disabled: false }))
+          .then(() => setPollStatus({ status: "Active", pollStarted: true }))
           .catch(() => {
             setPollStatus({ ...pollStatus, status: "Unable to start poll" });
           });
@@ -71,7 +115,7 @@ export const VoteControls = () => {
       case "end":
         instance
           .patch(`/poll/${cookies.get(pollIdCookie)}`, { hasStarted: false })
-          .then(() => setPollStatus({ status: "Inactive", disabled: true }))
+          .then(() => setPollStatus({ status: "Inactive", pollStarted: false }))
           .catch(() => {
             setPollStatus({ ...pollStatus, status: "Unable to end poll" });
           });
@@ -93,19 +137,19 @@ export const VoteControls = () => {
             value={"Start Poll"}
             className={"my-1"}
             onClick={() => pollControlHandler("start")}
-            disabled={!pollStatus.disabled}
+            disabled={pollStatus.pollStarted}
           />
           <Button
             value={"End Poll"}
             className={"my-1"}
             onClick={() => pollControlHandler("end")}
-            disabled={pollStatus.disabled}
+            disabled={!pollStatus.pollStarted}
           />
           <Button
             onClick={() => setShowModal(true)}
             value={"View Results"}
             className={"my-1"}
-            disabled={pollStatus.disabled}
+            disabled={!pollStatus.pollStarted}
           />
           <Header text={"Poll Code"} />
           <PollCode code={pollCode} />

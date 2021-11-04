@@ -21,7 +21,8 @@ export const VotePage = () => {
 
       // on error go back to join page
       socket.on("error", (e) => {
-        // console.log("error");
+        console.log("error");
+        console.log(e);
         // setConnected(false);
         socket.disconnect();
       });
