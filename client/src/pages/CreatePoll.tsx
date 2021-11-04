@@ -92,7 +92,7 @@ export const CreatePoll = () => {
 
   const disconnectAllStudents = () => {
     instance
-      .patch(`/poll/end/${pollId}`)
+      .patch(`/poll/end/${pollCode}`)
       .then((res) => {
         console.log(res);
       })

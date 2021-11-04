@@ -7,12 +7,14 @@ import { Redirect, useHistory } from "react-router-dom";
 import { pollCodeCookie } from "../constants/constants";
 
 export const VotePage = () => {
+  const history = useHistory();
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
   const [started, setStarted] = useState(false);
   const socket = io("http://localhost:3001", { withCredentials: true });
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
+
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected");
@@ -31,8 +33,10 @@ export const VotePage = () => {
         setStarted(data);
       });
 
-      socket.on("disconnect", (data) => {
+      socket.on("end", (data) => {
         console.log(data);
+        cookies.remove(pollCodeCookie);
+        history.replace("/");
       });
     });
 
