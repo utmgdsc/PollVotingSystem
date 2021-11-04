@@ -75,10 +75,10 @@ pollRouter.get("/result", async (req, res) => {
   }
 });
 
-pollRouter.patch("/end/:pollId", async (req, res) => {
-  const { pollId } = req.params;
+pollRouter.patch("/end/:pollCode", async (req, res) => {
+  const { pollCode } = req.params;
   try {
-    const result = await endForever(pollId);
+    const result = await endForever(pollCode);
     return res.status(result.status).send(result.data);
   } catch (err) {
     return res.status(500).send({ message: "Internal Server Error" });
