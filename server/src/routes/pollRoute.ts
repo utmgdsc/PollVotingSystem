@@ -5,6 +5,7 @@ import {
   getPollStatus,
   getResult,
   getStudents,
+  endForever,
 } from "../controllers/pollController";
 
 const pollRouter = Router();
@@ -68,6 +69,16 @@ pollRouter.get("/result", async (req, res) => {
   const { pollId } = req.query;
   try {
     const result = await getResult(pollId);
+    return res.status(result.status).send(result.data);
+  } catch (err) {
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+pollRouter.patch("/end/:pollId", async (req, res) => {
+  const { pollId } = req.params;
+  try {
+    const result = await endForever(pollId);
     return res.status(result.status).send(result.data);
   } catch (err) {
     return res.status(500).send({ message: "Internal Server Error" });
