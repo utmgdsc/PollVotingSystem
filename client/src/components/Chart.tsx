@@ -1,5 +1,6 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { Header } from "./Header";
 
 interface ChartProps {
   voteData: number[];
@@ -32,8 +33,9 @@ export const Chart = ({ voteData }: ChartProps) => {
   };
 
   return (
-    <>
+    <div className={"my-4"}>
+      <Header text={"Vote Results"} />
       <Doughnut data={chartData} />
-    </>
+    </div>
   );
 };

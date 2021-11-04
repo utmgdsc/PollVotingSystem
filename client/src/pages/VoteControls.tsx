@@ -21,7 +21,8 @@ export const VoteControls = () => {
   const cookies = new Cookies();
   const pollCode = cookies.get(pollCodeCookie);
   const [copyStatus, setCopyStatus] = useState("Copy Code");
-  const [connected, setConnected] = useState(true);
+  // const [connected, setConnected] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [voteData, setVoteData] = useState([0, 0, 0, 0, 0]);
   const [pollStatus, setPollStatus] = useState({
     status: "Active",
@@ -80,42 +81,47 @@ export const VoteControls = () => {
 
   return (
     <>
-      <Modal show={false} />
-      <div className={"flex flex-col"}>
-        <Header text={"Poll Controls"} />
-        <div className={"text-xl"}>Poll Status: {pollStatus.status}</div>
-        <Button
-          value={"Start Poll"}
-          className={"my-1"}
-          onClick={() => pollControlHandler("start")}
-          disabled={!pollStatus.disabled}
-        />
-        <Button
-          value={"End Poll"}
-          className={"my-1"}
-          onClick={() => pollControlHandler("end")}
-          disabled={pollStatus.disabled}
-        />
-        <Button
-          value={"View Results"}
-          className={"my-1"}
-          disabled={pollStatus.disabled}
-        />
-        <Header text={"Poll Code"} />
-        <PollCode code={pollCode} />
-        <CopyToClipboard
-          text={cookies.get(pollCodeCookie)}
-          onCopy={() => {
-            setCopyStatus("Copied!");
-            setTimeout(() => {
-              setCopyStatus("Copy Code");
-            }, 2000);
-          }}
-        >
-          <Button value={copyStatus} />
-        </CopyToClipboard>
-        <Chart voteData={voteData} />
-      </div>
+      {showModal ? (
+        <Modal showModal={showModal} onClick={() => setShowModal(false)}>
+          <Chart voteData={voteData} />
+        </Modal>
+      ) : (
+        <div className={"flex flex-col"}>
+          <Header text={"Poll Controls"} />
+          <div className={"text-xl"}>Poll Status: {pollStatus.status}</div>
+          <Button
+            value={"Start Poll"}
+            className={"my-1"}
+            onClick={() => pollControlHandler("start")}
+            disabled={!pollStatus.disabled}
+          />
+          <Button
+            value={"End Poll"}
+            className={"my-1"}
+            onClick={() => pollControlHandler("end")}
+            disabled={pollStatus.disabled}
+          />
+          <Button
+            onClick={() => setShowModal(true)}
+            value={"View Results"}
+            className={"my-1"}
+            disabled={pollStatus.disabled}
+          />
+          <Header text={"Poll Code"} />
+          <PollCode code={pollCode} />
+          <CopyToClipboard
+            text={cookies.get(pollCodeCookie)}
+            onCopy={() => {
+              setCopyStatus("Copied!");
+              setTimeout(() => {
+                setCopyStatus("Copy Code");
+              }, 2000);
+            }}
+          >
+            <Button value={copyStatus} />
+          </CopyToClipboard>
+        </div>
+      )}
     </>
   );
 };

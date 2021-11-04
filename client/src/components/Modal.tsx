@@ -1,17 +1,32 @@
 import React from "react";
 
 interface ModalProps {
-  show: boolean;
+  showModal: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }
 
-export const Modal = ({ show }: ModalProps) => {
+export const Modal = ({ showModal, onClick, children }: ModalProps) => {
   return (
     <div
       className={`fixed ${
-        show ? "" : "hidden"
-      } inset-0 bg-gray-500 bg-opacity-80 overflow-y-auto h-full w-full`}
+        showModal ? "" : "hidden"
+      } inset-0 bg-gray-700 bg-opacity-100 overflow-y-auto h-full w-full`}
     >
-      Modal
+      <div className={"flex h-full items-center justify-center"}>
+        <div className={"w-4/12 bg-white"}>
+          <div onClick={() => onClick()} className={"flex"}>
+            <div
+              className={
+                "ml-auto p-2 text-xl hover:text-red-500 cursor-pointer"
+              }
+            >
+              X
+            </div>
+          </div>
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
