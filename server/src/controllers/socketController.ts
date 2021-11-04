@@ -18,10 +18,10 @@ async function join(socket: Socket, pollCode: string) {
             if (room !== socket.id) socket.leave(room);
         });
         const hasStarted = await client.get(pollId);
-        console.log(!!hasStarted);
+        console.log(hasStarted);
         socket.join(pollId);
         socket.data["pollId"] = pollId;
-        io.to(socket.id).emit("pollStarted", !!hasStarted);
+        io.to(socket.id).emit("pollStarted", hasStarted === "false" ? false : true );
     } catch (err) {
         console.log(err);
         io.to(socket.id).emit("error", err);

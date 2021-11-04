@@ -14,11 +14,13 @@ export const JoinPoll = () => {
   const cookies = new Cookies();
 
   const joinPollRoomHandler = () => {
-    console.log("Button was submitted");
-    console.log(`Poll Code is: ${pollCode}`);
     // Check if the room exists here
-    cookies.set(pollCodeCookie, pollCode, { path: "/" });
-    history.push("/vote");
+    if (pollCode.length !== 0) {
+      console.log("Button was submitted");
+      console.log(`Poll Code is: ${pollCode}`);
+      cookies.set(pollCodeCookie, pollCode, { path: "/" });
+      history.push("/vote");
+    }
   };
 
   return (

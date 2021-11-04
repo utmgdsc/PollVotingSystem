@@ -38,21 +38,12 @@ export const VoteControls = () => {
   useEffect(() => {
     const fetchPollStatus = async () => {
       await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
-        // console.log(res.data.pollStarted);
-        // console.log(pollStatus.pollStarted)
-        // console.log("Old Status", res);
         const pollStarted = res.data.pollStarted;
         if (pollStarted !== pollStatus.pollStarted) {
           const newStatus = { ...pollStatus };
           newStatus.pollStarted = pollStarted;
-          newStatus.status = pollStarted ? "Inactive" : "Active";
+          newStatus.status = pollStarted ? "Active" : "Inactive";
           setPollStatus(newStatus);
-          // console.log("New Status", newStatus);
-        } else {
-          console.log(
-            "Same, no update",
-            pollStarted === pollStatus.pollStarted
-          );
         }
       });
     };
@@ -61,8 +52,6 @@ export const VoteControls = () => {
     const fetchPollResults = async () => {
       await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
         const pollResults = res.data.result;
-        console.log("Old Poll Data", voteData);
-        console.log(pollResults);
         let setData = false;
         const newVoteData = [...voteData];
         for (let i = 0; i < pollResults.length; i++) {
@@ -73,7 +62,6 @@ export const VoteControls = () => {
         }
         if (setData) {
           setVoteData(newVoteData);
-          console.log("New Poll Data", newVoteData);
         }
       });
     };
