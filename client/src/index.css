@@ -5,7 +5,11 @@
 @tailwind utilities;
 
 html,
-body,
-#root {
+#root,
+body {
   height: 100%;
+}
+
+body {
+  background: #F5F5F5;
 }

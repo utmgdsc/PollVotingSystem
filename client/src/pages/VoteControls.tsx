@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "../components/Modal";
 import { Header } from "../components/Header";
 import { Button } from "../components/Button";
@@ -7,16 +7,56 @@ import Cookies from "universal-cookie";
 import { instance } from "../axios";
 import { pollIdCookie, pollCodeCookie } from "../constants/constants";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Chart } from "../components/Chart";
+import { io } from "socket.io-client";
+import { useHistory } from "react-router-dom";
+
+interface Result {
+  _id: number;
+  count: number;
+}
 
 export const VoteControls = () => {
+  const history = useHistory();
+  const cookies = new Cookies();
+  const pollCode = cookies.get(pollCodeCookie);
   const [copyStatus, setCopyStatus] = useState("Copy Code");
+  const [connected, setConnected] = useState(true);
+  const [voteData, setVoteData] = useState([0, 0, 0, 0, 0]);
   const [pollStatus, setPollStatus] = useState({
     status: "Active",
     disabled: true,
   });
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const cookies = new Cookies();
+  if (pollCode === undefined) {
+    history.replace("/");
+  }
+  const socket = io("http://localhost:3001", { withCredentials: true });
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected");
+      socket.emit("join", pollCode);
+      //
+      // // on error go back to join page
+      // socket.on("error", () => {
+      //   console.log("error");
+      //   // setConnected(false);
+      // });
+      socket.on("result", (e: Result[]) => {
+        console.log(e);
+        const newVoteData = [...voteData];
+        for (let i = 0; i < e.length; i++) {
+          newVoteData[e[i]._id - 1] = e[i].count;
+        }
+        setVoteData(newVoteData);
+      });
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, [socket]);
+
   const pollControlHandler = (controlOption: string) => {
     switch (controlOption) {
       case "start":
@@ -62,7 +102,7 @@ export const VoteControls = () => {
           disabled={pollStatus.disabled}
         />
         <Header text={"Poll Code"} />
-        <PollCode code={cookies.get(pollCodeCookie)} />
+        <PollCode code={pollCode} />
         <CopyToClipboard
           text={cookies.get(pollCodeCookie)}
           onCopy={() => {
@@ -74,6 +114,7 @@ export const VoteControls = () => {
         >
           <Button value={copyStatus} />
         </CopyToClipboard>
+        <Chart voteData={voteData} />
       </div>
     </>
   );

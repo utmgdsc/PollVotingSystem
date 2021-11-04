@@ -7,6 +7,7 @@ import { CreatePoll } from "./pages/CreatePoll";
 import { ProfHome } from "./pages/ProfHome";
 import { VoteControls } from "./pages/VoteControls";
 import Cookies from "universal-cookie";
+import { pollCodeCookie, pollIdCookie } from "./constants/constants";
 
 const App = () => {
   const arr: Array<Option> = [
@@ -32,14 +33,14 @@ const App = () => {
               <VotePage />
             </Route>
             <Route exact path={"/createpoll"}>
-              {cookies.remove("pollId")}
-              {cookies.remove("pollCode")}
               <CreatePoll />
             </Route>
             <Route exact path={"/prof"}>
               <ProfHome />
             </Route>
             <Route exact path={"/votecontrols"}>
+              {console.log(cookies.get(pollCodeCookie))}
+              {console.log(cookies.get(pollIdCookie))}
               <VoteControls />
             </Route>
             <Route path={"/"}>
@@ -55,4 +56,7 @@ const App = () => {
 
 export default App;
 
-//              {/*{cookies.get("pollCode") === undefined || cookies.get("pollId") === undefined ? <Redirect to={"/"}></Redirect> : <VoteControls />}*/}
+//             {/*{cookies.remove(pollIdCookie)}*/}
+//               {/*{cookies.remove(pollCodeCookie)}*/}
+// {cookies.get(pollCodeCookie) === undefined || cookies.get(pollIdCookie) === undefined ?
+//                <Redirect to={"/"}></Redirect> : <VoteControls />}

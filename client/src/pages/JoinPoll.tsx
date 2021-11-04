@@ -9,16 +9,22 @@ import { pollCodeCookie } from "../constants/constants";
 export const JoinPoll = () => {
   const history = useHistory();
   const [pollCode, setPollCode] = useState("");
+  const [errorJoinMsg, setErrorJoinMsg] = useState("");
+
   const cookies = new Cookies();
 
-  const joinPollRoom = () => {
+  const joinPollRoomHandler = () => {
     console.log("Button was submitted");
     console.log(`Poll Code is: ${pollCode}`);
+    // Check if the room exists here
+    cookies.set(pollCodeCookie, pollCode, { path: "/" });
+    history.push("/vote");
   };
 
   return (
     <div className={"block text-center px-5"}>
       <Header text={"MCS PollVoting"} />
+      <div className={"text-center"}>{errorJoinMsg}</div>
       <div className={"flex flex-col"}>
         <FormInput
           placeholder={"Poll Code"}
@@ -27,10 +33,8 @@ export const JoinPoll = () => {
         />
         <Button
           value={"Enter"}
-          onClick={(e) => {
-            cookies.set(pollCodeCookie, pollCode, { path: "/" });
-            history.push("/vote");
-            e.preventDefault();
+          onClick={() => {
+            joinPollRoomHandler();
           }}
         />
       </div>

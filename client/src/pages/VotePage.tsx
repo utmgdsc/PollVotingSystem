@@ -9,35 +9,34 @@ import { pollCodeCookie } from "../constants/constants";
 export const VotePage = () => {
   const history = useHistory();
   const cookies = new Cookies();
-  const [pollCode, _] = useState(cookies.get(pollCodeCookie));
+  const [pollCode] = useState(cookies.get(pollCodeCookie));
   const [connected, setConnected] = useState(true);
   const [started, setStarted] = useState(false);
   const socket = io("http://localhost:3001", { withCredentials: true });
 
-  socket.on("connect", () => {
-    console.log("Connected");
-    socket.emit("join", pollCode);
-
-    // on error go back to join page
-    socket.on("error", (e) => {
-      console.log("error");
-      setConnected(false);
-      // history.push("/");
-    });
-    socket.on("pollStarted", (data) => {
-      console.log(data);
-      setStarted(data);
-    });
-    // socket.on("result", console.log);
-  });
-
   useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected");
+      socket.emit("join", pollCode);
+
+      // on error go back to join page
+      socket.on("error", (e) => {
+        // console.log("error");
+        // setConnected(false);
+        socket.disconnect();
+      });
+      // socket.on("pollStarted", (data) => {
+      //   console.log(data);
+      //   setStarted(data);
+      // });
+      // socket.on("result", console.log);
+    });
+
     if (!connected) {
       socket.disconnect();
-    } else {
-      socket.connect();
+      // history.push("/");
     }
-  });
+  }, [socket]);
 
   const pollButtonHandler = (selectedOption: string) => {
     console.log("Selected:", selectedOption);
@@ -55,7 +54,6 @@ export const VotePage = () => {
       const optionValue = String.fromCharCode(i);
       pollOptionButtons.push(
         <PollOptionButton
-          disabled={started}
           key={i}
           onClick={() => pollButtonHandler(optionValue)}
           name={optionValue}
@@ -67,6 +65,7 @@ export const VotePage = () => {
 
   return (
     <div className={"flex flex-col items-center px-5"}>
+      <Header text={`Poll Code: ${pollCode}`} />
       <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
     </div>
   );
