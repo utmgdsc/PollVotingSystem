@@ -9,8 +9,6 @@ import { pollCodeCookie } from "../constants/constants";
 export const JoinPoll = () => {
   const history = useHistory();
   const [pollCode, setPollCode] = useState("");
-  const [errorJoinMsg, setErrorJoinMsg] = useState("");
-
   const cookies = new Cookies();
 
   const joinPollRoomHandler = () => {
@@ -26,7 +24,6 @@ export const JoinPoll = () => {
   return (
     <div className={"block text-center px-5"}>
       <Header text={"MCS PollVoting"} />
-      <div className={"text-center"}>{errorJoinMsg}</div>
       <div className={"flex flex-col"}>
         <FormInput
           placeholder={"Poll Code"}

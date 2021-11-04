@@ -7,13 +7,12 @@ import { Redirect, useHistory } from "react-router-dom";
 import { pollCodeCookie } from "../constants/constants";
 
 export const VotePage = () => {
-  const history = useHistory();
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
-  const [connected, setConnected] = useState(true);
   const [started, setStarted] = useState(false);
   const socket = io("http://localhost:3001", { withCredentials: true });
   const [errorCode, setErrorCode] = useState(0);
+  const [selectedOption, setSelectionOption] = useState("");
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected");
@@ -25,21 +24,22 @@ export const VotePage = () => {
         console.log(e.code);
         console.log(e.message);
         setErrorCode(e.code);
-        // setConnected(false);
       });
+
       socket.on("pollStarted", (data) => {
+        console.log("Poll Started", data);
+        setStarted(data);
+      });
+
+      socket.on("disconnect", (data) => {
         console.log(data);
-        // setStarted(data);
       });
     });
 
-    // if (!connected) {
-    //   socket.disconnect();
-    // history.push("/");
     return () => {
       socket.disconnect();
     };
-  }, [errorCode]);
+  }, [errorCode, started, selectedOption]);
 
   const pollButtonHandler = (selectedOption: string) => {
     console.log("Selected:", selectedOption);
@@ -49,6 +49,7 @@ export const VotePage = () => {
       (selectedOption.charCodeAt(0) % 65) + 1,
       "[STUDENT ID]"
     );
+    setSelectionOption(selectedOption);
   };
 
   const optionButtons = () => {
@@ -60,6 +61,7 @@ export const VotePage = () => {
           key={i}
           onClick={() => pollButtonHandler(optionValue)}
           name={optionValue}
+          disabled={!started}
         />
       );
     }
@@ -71,6 +73,7 @@ export const VotePage = () => {
   ) : (
     <div className={"flex flex-col items-center px-5"}>
       <Header text={`Poll Code: ${pollCode}`} />
+      <Header text={`Selected Option: ${selectedOption}`} />
       <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
     </div>
   );

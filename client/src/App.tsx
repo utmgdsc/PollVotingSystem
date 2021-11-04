@@ -7,7 +7,7 @@ import { CreatePoll } from "./pages/CreatePoll";
 import { ProfHome } from "./pages/ProfHome";
 import { VoteControls } from "./pages/VoteControls";
 import Cookies from "universal-cookie";
-import { pollCodeCookie, pollIdCookie } from "./constants/constants";
+import { PastPolls } from "./pages/PastPolls";
 
 const App = () => {
   const arr: Array<Option> = [
@@ -21,12 +21,10 @@ const App = () => {
     },
   ];
 
-  const cookies = new Cookies();
-
   return (
     <div className={"flex flex-col bg-background h-full"}>
       <Navbar options={arr} />
-      <div className={"flex h-full justify-center items-center"}>
+      <div className={"mx-4 flex h-full justify-center items-center"}>
         <BrowserRouter>
           <Switch>
             <Route exact path={"/vote"}>
@@ -39,9 +37,10 @@ const App = () => {
               <ProfHome />
             </Route>
             <Route exact path={"/votecontrols"}>
-              {console.log(cookies.get(pollCodeCookie))}
-              {console.log(cookies.get(pollIdCookie))}
               <VoteControls />
+            </Route>
+            <Route exact path={"/pastpolls"}>
+              <PastPolls />
             </Route>
             <Route path={"/"}>
               <Redirect to={"/"}></Redirect>

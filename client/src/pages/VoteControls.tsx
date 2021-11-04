@@ -22,7 +22,6 @@ export const VoteControls = () => {
   const pollCode = cookies.get(pollCodeCookie);
   const pollId = cookies.get(pollIdCookie);
   const [copyStatus, setCopyStatus] = useState("Copy Code");
-  // const [connected, setConnected] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [voteData, setVoteData] = useState([0, 0, 0, 0, 0]);
   const [pollStatus, setPollStatus] = useState({
@@ -30,40 +29,44 @@ export const VoteControls = () => {
     pollStarted: false,
   });
 
-  if (pollCode === undefined) {
-    history.replace("/");
+  if (pollCode === undefined || pollId === undefined) {
+    history.push("/");
   }
   const socket = io("http://localhost:3001", { withCredentials: true });
 
   useEffect(() => {
     const fetchPollStatus = async () => {
-      await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
-        const pollStarted = res.data.pollStarted;
-        if (pollStarted !== pollStatus.pollStarted) {
-          const newStatus = { ...pollStatus };
-          newStatus.pollStarted = pollStarted;
-          newStatus.status = pollStarted ? "Active" : "Inactive";
-          setPollStatus(newStatus);
-        }
-      });
+      if (pollId !== undefined) {
+        await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
+          const pollStarted = res.data.pollStarted;
+          if (pollStarted !== pollStatus.pollStarted) {
+            const newStatus = { ...pollStatus };
+            newStatus.pollStarted = pollStarted;
+            newStatus.status = pollStarted ? "Active" : "Inactive";
+            setPollStatus(newStatus);
+          }
+        });
+      }
     };
     fetchPollStatus();
 
     const fetchPollResults = async () => {
-      await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
-        const pollResults = res.data.result;
-        let setData = false;
-        const newVoteData = [...voteData];
-        for (let i = 0; i < pollResults.length; i++) {
-          if (pollResults[i].count !== voteData[pollResults[i]._id - 1]) {
-            newVoteData[pollResults[i]._id - 1] = pollResults[i].count;
-            setData = true;
+      if (pollId !== undefined) {
+        await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
+          const pollResults = res.data.result;
+          let setData = false;
+          const newVoteData = [...voteData];
+          for (let i = 0; i < pollResults.length; i++) {
+            if (pollResults[i].count !== voteData[pollResults[i]._id - 1]) {
+              newVoteData[pollResults[i]._id - 1] = pollResults[i].count;
+              setData = true;
+            }
           }
-        }
-        if (setData) {
-          setVoteData(newVoteData);
-        }
-      });
+          if (setData) {
+            setVoteData(newVoteData);
+          }
+        });
+      }
     };
     fetchPollResults();
 
@@ -137,10 +140,9 @@ export const VoteControls = () => {
             onClick={() => setShowModal(true)}
             value={"View Results"}
             className={"my-1"}
-            disabled={!pollStatus.pollStarted}
           />
           <Header text={"Poll Code"} />
-          <PollCode code={pollCode} />
+          <PollCode code={pollCode === undefined ? "" : pollCode} />
           <CopyToClipboard
             text={cookies.get(pollCodeCookie)}
             onCopy={() => {
