@@ -82,7 +82,7 @@ async function getPollStatus(pollId: any) {
   if (pollId === null || pollId === undefined || typeof pollId !== "string")
     return { status: 400, data: { message: "Invalid poll Id" } };
   const result = await client.get(pollId);
-  const pollStarted = result === null ? false : result;
+  const pollStarted = result === null ? false : result === "false" ? false : true;
   return { status: 200, data: { pollStarted } };
 }
 

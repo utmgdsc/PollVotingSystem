@@ -2,17 +2,29 @@ import React from "react";
 
 interface ButtonProps {
   value: string;
-  onClick?: React.MouseEventHandler;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
+  disabled?: boolean;
 }
 
-export const Button = ({ value, onClick, className }: ButtonProps) => {
+export const Button = ({
+  value,
+  onClick,
+  className,
+  disabled,
+}: ButtonProps) => {
+  const hi = "hi";
   return (
-    <div
+    <button
+      disabled={disabled}
       onClick={onClick}
-      className={`${className} py-2 inline-block bg-primary hover:bg-hover cursor-pointer px-36`}
+      className={`${className} ${
+        disabled
+          ? "cursor-not-allowed opacity-50"
+          : "hover:bg-hover cursor-pointer"
+      } py-2 inline-block bg-primary px-36`}
     >
       <p className={"font-bold text-xl text-white text-center"}>{value}</p>
-    </div>
+    </button>
   );
 };

@@ -16,25 +16,14 @@ services:
     image: mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_DATABASE: quiz
+      - MONGO_INITDB_DATABASE=quiz
+      - TZ=America/New_York
     ports:
       - "27017:27017"
     networks:
       - backend
     volumes:
       - MongodbVolume:/data/db
-  frontend:
-    container_name: frontend
-    restart: unless-stopped
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    depends_on:
-      - voteapi
-    networks:
-      - backend
-    ports:
-      - "3000:5000"
   voteapi:
     container_name: voteapi
     build:
@@ -52,6 +41,18 @@ services:
       - ./server/.env
     environment:
       - TZ=America/New_York
+#  frontend:
+#    container_name: frontend
+#    restart: unless-stopped
+#    build:
+#      context: ./client
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - voteapi
+#    networks:
+#      - backend
+#    ports:
+#      - "3000:3000"
 volumes:
     RedisVolume:
     MongodbVolume:

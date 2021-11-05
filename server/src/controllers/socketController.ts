@@ -1,8 +1,8 @@
-import { PollModel } from "../db/mogoose";
-import { io } from "../socket";
-import { Socket } from "socket.io";
-import { client } from "../redis";
-import { ObjectId } from "../db/schema";
+import {PollModel} from "../db/mogoose";
+import {io} from "../socket";
+import {Socket} from "socket.io";
+import {client} from "../redis";
+import {ObjectId} from "../db/schema";
 
 async function join(socket: Socket, pollCode: string) {
   try {
@@ -13,19 +13,19 @@ async function join(socket: Socket, pollCode: string) {
     console.log(pollId);
     if (pollId === null) throw { code: 1, message: "Invalid poll code" };
 
-    // ensure that socket is connected to 1 room (other than the default room)
-    socket.rooms.forEach((room) => {
-      if (room !== socket.id) socket.leave(room);
-    });
-    const hasStarted = await client.get(pollId);
-    console.log(hasStarted);
-    socket.join(pollId);
-    socket.data["pollId"] = pollId;
-    io.to(socket.id).emit("pollStarted", hasStarted);
-  } catch (err) {
-    console.log(err);
-    io.to(socket.id).emit("error", err);
-  }
+        // ensure that socket is connected to 1 room (other than the default room)
+        socket.rooms.forEach((room) => {
+            if (room !== socket.id) socket.leave(room);
+        });
+        const hasStarted = await client.get(pollId);
+        console.log("Has Started", hasStarted);
+        socket.join(pollId);
+        socket.data["pollId"] = pollId;
+        io.to(socket.id).emit("pollStarted", hasStarted === null || hasStarted === "false" ? false : true );
+    } catch (err) {
+        console.log(err);
+        io.to(socket.id).emit("error", err);
+    }
 }
 
 async function pollResult(pollId: string) {
