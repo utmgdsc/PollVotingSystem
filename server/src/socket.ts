@@ -4,7 +4,7 @@ import {Server, Socket} from "socket.io";
 import {vote, join} from "./controllers/socketController";
 
 const io = new Server({
-    cors: {origin: "http://localhost:3000", credentials: true}
+    cors: {origin: "http://localhost:5000", credentials: true}
 });
 
 // log the socket id when client socket connects for the first time
