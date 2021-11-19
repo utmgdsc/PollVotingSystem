@@ -69,6 +69,9 @@ export const VoteControls = () => {
     };
     fetchPollResults();
 
+    if (!socket.connected) {
+      socket.connect();
+    }
     socket.emit("join", pollCode);
     //
     // // on error go back to join page
