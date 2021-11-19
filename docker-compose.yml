@@ -7,10 +7,13 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - backend
+      backend:
+        aliases:
+          - redis
     volumes:
       - RedisVolume:/data
     command: redis-server --requirepass password
+
   mongodb:
     container_name: mongo
     image: mongo:4.4
@@ -21,9 +24,12 @@ services:
     ports:
       - "27018:27017"
     networks:
-      - backend
+      backend:
+        aliases:
+          - mongo
     volumes:
       - MongodbVolume:/data/db
+
   voteapi:
     container_name: voteapi
     build:
@@ -31,16 +37,19 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     networks:
-      - backend
+      backend:
+        aliases:
+          - voteapi
     depends_on:
       - mongodb
       - caching
     ports:
-      - "3001:3001"
+      - "5001:5001"
     env_file:
       - ./server/.env
     environment:
       - TZ=America/New_York
+
   frontend:
     container_name: frontend
     restart: unless-stopped
@@ -50,12 +59,32 @@ services:
     depends_on:
       - voteapi
     networks:
-      - backend
+      backend:
+        aliases:
+          - frontend
     ports:
-      - "5000:3000"
+      - "3001:3001"
+    env_file:
+      - ./client/.env
+
+  nginx-proxy:
+    container_name: nginx
+    image: nginx
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    networks:
+      backend:
+        aliases:
+          - nginx
+    ports:
+      - "5000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
 volumes:
-    RedisVolume:
-    MongodbVolume:
+  RedisVolume:
+  MongodbVolume:
+
 networks:
   backend:
-    driver: "bridge"

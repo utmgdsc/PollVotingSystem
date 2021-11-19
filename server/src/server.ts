@@ -17,7 +17,13 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // parse cookies and body and enable cors
-app.use(cors({ origin: "http://localhost:5000", credentials: true, methods: "GET,POST,DELETE,PATCH"}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: "GET,POST,DELETE,PATCH",
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());

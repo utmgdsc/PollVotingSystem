@@ -8,8 +8,8 @@ import { instance } from "../axios";
 import { pollIdCookie, pollCodeCookie } from "../constants/constants";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Chart } from "../components/Chart";
-import { io } from "socket.io-client";
 import { useHistory } from "react-router-dom";
+import { socket } from "../socket";
 
 interface Result {
   _id: number;
@@ -32,7 +32,6 @@ export const VoteControls = () => {
   if (pollCode === undefined || pollId === undefined) {
     history.push("/");
   }
-  const socket = io("http://localhost:3001", { withCredentials: true });
 
   useEffect(() => {
     const fetchPollStatus = async () => {
@@ -70,26 +69,28 @@ export const VoteControls = () => {
     };
     fetchPollResults();
 
-    socket.on("connect", () => {
-      console.log("Connected");
-      socket.emit("join", pollCode);
-      //
-      // // on error go back to join page
-      // socket.on("error", () => {
-      //   console.log("error");
-      //   // setConnected(false);
-      // });
-      socket.on("result", (e: Result[]) => {
-        console.log(e);
-        const newVoteData = [...voteData];
-        for (let i = 0; i < e.length; i++) {
-          newVoteData[e[i]._id - 1] = e[i].count;
-        }
-        setVoteData(newVoteData);
-      });
-    });
+    if (!socket.connected) {
+      socket.connect();
+    }
+    socket.emit("join", pollCode);
+    //
+    // // on error go back to join page
+    // socket.on("error", () => {
+    //   console.log("error");
+    //   // setConnected(false);
+    // });
+    const resultHandler = (e: Result[]) => {
+      console.log(e);
+      const newVoteData = [...voteData];
+      for (let i = 0; i < e.length; i++) {
+        newVoteData[e[i]._id - 1] = e[i].count;
+      }
+      setVoteData(newVoteData);
+    };
+    socket.on("result", resultHandler);
+
     return () => {
-      socket.disconnect();
+      socket.off("result", resultHandler);
     };
   }, [pollStatus, voteData]);
 

@@ -1,47 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { PollOptionButton } from "../components/PollOptionButton";
 import { Header } from "../components/Header";
-import { io } from "socket.io-client";
 import Cookies from "universal-cookie";
 import { Redirect, useHistory } from "react-router-dom";
 import { pollCodeCookie } from "../constants/constants";
+import { socket } from "../socket";
 
 export const VotePage = () => {
   const history = useHistory();
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
   const [started, setStarted] = useState(false);
-  const socket = io("http://localhost:3001", { withCredentials: true });
+
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected");
-      socket.emit("join", pollCode);
+    if (!socket.connected) {
+      socket.connect();
+    }
+    socket.emit("join", pollCode);
 
-      // on error go back to join page
-      socket.on("error", (e) => {
-        console.log("error");
-        console.log(e.code);
-        console.log(e.message);
-        setErrorCode(e.code);
-      });
+    const errorHandler = (e: any) => {
+      console.log("error");
+      console.log(e.code);
+      console.log(e.message);
+      setErrorCode(e.code);
+    };
 
-      socket.on("pollStarted", (data) => {
-        console.log("Poll Started", data);
-        setStarted(data);
-      });
+    // on error go back to join page
+    socket.on("error", errorHandler);
 
-      socket.on("end", (data) => {
-        console.log(data);
-        cookies.remove(pollCodeCookie);
-        history.replace("/");
-      });
-    });
+    const pollStartedHandler = (data: any) => {
+      console.log("Poll Started", data);
+      setStarted(data);
+    };
+
+    socket.on("pollStarted", pollStartedHandler);
+
+    const pollClosedHandler = (data: any) => {
+      console.log(data);
+      cookies.remove(pollCodeCookie);
+      history.replace("/");
+    };
+    socket.on("end", pollClosedHandler);
 
     return () => {
-      socket.disconnect();
+      socket.off("error", errorHandler);
+      socket.off("pollStarted", pollStartedHandler);
+      socket.off("end", pollClosedHandler);
     };
   }, [errorCode, started, selectedOption]);
 
