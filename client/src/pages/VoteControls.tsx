@@ -32,7 +32,7 @@ export const VoteControls = () => {
   if (pollCode === undefined || pollId === undefined) {
     history.push("/");
   }
-  const socket = io("https://poll.utm.utoronto.ca", { withCredentials: true });
+  const socket = io(`${process.env.REACT_APP_BACKEND_URL}`, { withCredentials: true });
 
   useEffect(() => {
     const fetchPollStatus = async () => {

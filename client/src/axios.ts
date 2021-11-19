@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const instance = axios.create({
-  baseURL: "https://poll.utm.utoronto.ca/api",
+  baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
 });

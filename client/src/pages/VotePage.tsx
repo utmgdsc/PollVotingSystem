@@ -11,7 +11,7 @@ export const VotePage = () => {
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
   const [started, setStarted] = useState(false);
-  const socket = io("https://poll.utm.utoronto.ca", { withCredentials: true });
+  const socket = io(`${process.env.REACT_APP_BACKEND_URL}`, { withCredentials: true });
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
 
