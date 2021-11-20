@@ -29,10 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use((req, res, next) => {
   if (req.headers.utorid != undefined) {
-    console.log(
-      "shib user " + req.headers.utorid + " " + req.headers.http_mail
-    );
-    console.log("origin " + req.headers.origin);
+    console.log("headers " + req.headers);
   }
   next();
 });
@@ -43,13 +40,11 @@ const server = app.listen(port, () => {
   io.attach(server);
   io.use((socket, next) => {
     if (socket.handshake.headers.utorid != undefined) {
-      console.log(
-        "shib user " +
-          socket.handshake.headers.utorid +
-          " " +
-          socket.handshake.headers.http_mail
-      );
-      console.log("origin " + socket.handshake.headers.origin);
+      socket.data["utorid"] = socket.handshake.headers.utorid;
+      next();
+    } else if (socket.data.utorid != undefined) {
+      next();
     }
+    next(new Error("Not Authorized"));
   });
 });
