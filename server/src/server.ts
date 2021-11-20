@@ -30,6 +30,7 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   if (req.headers.utorid != undefined) {
     next();
+    return;
   }
   next(new Error("Not authenticated"));
 });
@@ -42,8 +43,10 @@ const server = app.listen(port, () => {
     if (socket.handshake.headers.utorid != undefined) {
       socket.data["utorid"] = socket.handshake.headers.utorid;
       next();
+      return;
     } else if (socket.data.utorid != undefined) {
       next();
+      return;
     }
     next(new Error("Not Authorized"));
   });
