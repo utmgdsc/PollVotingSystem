@@ -19,7 +19,9 @@ export const VotePage = () => {
     if (!socket.connected) {
       socket.connect();
     }
-    socket.emit("join", pollCode);
+    if (!socket.connected) {
+      socket.emit("join", pollCode);
+    }
 
     const errorHandler = (e: any) => {
       console.log("error");
