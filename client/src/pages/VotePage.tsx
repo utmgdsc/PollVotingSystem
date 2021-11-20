@@ -16,11 +16,12 @@ export const VotePage = () => {
   const [selectedOption, setSelectionOption] = useState("");
 
   useEffect(() => {
+    socket.emit("join", pollCode);
+  }, []);
+
+  useEffect(() => {
     if (!socket.connected) {
       socket.connect();
-    }
-    if (!socket.connected) {
-      socket.emit("join", pollCode);
     }
 
     const errorHandler = (e: any) => {
