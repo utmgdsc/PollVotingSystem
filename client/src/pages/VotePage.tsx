@@ -58,11 +58,7 @@ export const VotePage = () => {
   const pollButtonHandler = (selectedOption: string) => {
     console.log("Selected:", selectedOption);
     console.log((selectedOption.charCodeAt(0) % 65) + 1);
-    socket.emit(
-      "vote",
-      (selectedOption.charCodeAt(0) % 65) + 1,
-      "[STUDENT ID]"
-    );
+    socket.emit("vote", (selectedOption.charCodeAt(0) % 65) + 1);
     setSelectionOption(selectedOption);
   };
 

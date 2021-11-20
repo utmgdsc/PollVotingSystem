@@ -29,9 +29,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use((req, res, next) => {
   if (req.headers.utorid != undefined) {
-    console.log("headers " + req.headers);
+    next();
   }
-  next();
+  next(new Error("Not authenticated"));
 });
 app.use("/poll", pollRouter);
 

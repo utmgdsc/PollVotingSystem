@@ -17,8 +17,9 @@ io.on("connection", (socket: Socket) => {
     await join(socket, pollCode);
 
     // let the socket vote in the connected room
-    socket.on("vote", async (answer: number, utorid: string) => {
-      await vote(socket, answer, utorid);
+    socket.on("vote", async (answer: number) => {
+      console.log(socket.data.utorid);
+      await vote(socket, answer, socket.data.utorid);
     });
   });
 });
