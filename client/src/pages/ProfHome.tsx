@@ -18,6 +18,11 @@ export const ProfHome = () => {
         className={"my-1"}
         onClick={() => history.push("/pastpolls")}
       />
+      <Button
+        value={"Join Poll"}
+        className={"my-1"}
+        onClick={() => history.push("/join")}
+      />
     </div>
   );
 };

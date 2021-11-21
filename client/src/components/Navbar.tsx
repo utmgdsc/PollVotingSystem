@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 interface NavbarProps {
   options: Array<Option>;
@@ -10,10 +11,18 @@ export interface Option {
 }
 
 export const Navbar = ({ options }: NavbarProps) => {
+  const history = useHistory();
   const optionLinks = options.map((option, idx) => {
     return (
       <li className={"px-2"} key={idx}>
-        <a className={"text-sm mx-3"} href={option.href}>
+        <a
+          className={"text-sm mx-3"}
+          href={option.href}
+          onClick={(e) => {
+            e.preventDefault();
+            history.push(option.href);
+          }}
+        >
           {option.name}
         </a>
       </li>
