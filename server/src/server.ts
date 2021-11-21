@@ -9,6 +9,7 @@ import { io } from "./socket";
 import pollRouter from "./routes/pollRoute";
 import { db } from "./db/mogoose";
 import userRouter from "./routes/userRoutes";
+import { getUser } from "./controllers/userController";
 db.on("open", () => {
   console.log("Connected to mongo");
 });
@@ -28,20 +29,22 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use((req, res, next) => {
-  if (req.headers.utorid != undefined) {
-    next();
-    return;
+app.use("/user", userRouter);
+app.use(async (req, res, next) => {
+  try {
+    const userType = await getUser(req.headers.utorid);
+    if (userType.data.userType === "instructor") next();
+    else next(new Error("Forbidden User"));
+  } catch (err) {
+    next(new Error("Forbidden User"));
   }
-  next(new Error("Not authenticated"));
 });
 app.use("/poll", pollRouter);
-app.use("/user", userRouter);
 
 const server = app.listen(port, () => {
   console.log("Listening on http://localhost:" + port);
   io.attach(server);
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     if (socket.handshake.headers.utorid != undefined) {
       socket.data["utorid"] = socket.handshake.headers.utorid;
       next();
