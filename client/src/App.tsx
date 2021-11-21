@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Option } from "./components/Navbar";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { JoinPoll } from "./pages/JoinPoll";
@@ -8,9 +8,11 @@ import { ProfHome } from "./pages/ProfHome";
 import { VoteControls } from "./pages/VoteControls";
 import Cookies from "universal-cookie";
 import { PastPolls } from "./pages/PastPolls";
+import { instance } from "./axios";
+import { instructor } from "./constants/constants";
 
 const App = () => {
-  const arr: Array<Option> = [
+  const options: Array<Option> = [
     {
       name: "Create Poll",
       href: "/createpoll",
@@ -19,7 +21,29 @@ const App = () => {
       name: "Past Polls",
       href: "/pastPolls",
     },
+    {
+      name: "Join Polls",
+      href: "/join",
+    },
   ];
+  const empty: Array<Option> = [];
+  const [isInstructor, setIsInstructor] = useState(false);
+  const [arr, setArr] = useState(empty);
+  useEffect(() => {
+    instance
+      .get("/user")
+      .then((res) => {
+        const data = res.data.userType === instructor;
+        if (data) setArr(options);
+        else setArr(empty);
+        setIsInstructor(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        setArr(empty);
+        setIsInstructor(false);
+      });
+  }, [isInstructor]);
 
   return (
     <div className={"flex flex-col bg-background h-full"}>
@@ -30,21 +54,26 @@ const App = () => {
             <Route exact path={"/vote"}>
               <VotePage />
             </Route>
-            <Route exact path={"/createpoll"}>
-              <CreatePoll />
-            </Route>
-            <Route exact path={"/prof"}>
-              <ProfHome />
-            </Route>
-            <Route exact path={"/votecontrols"}>
-              <VoteControls />
-            </Route>
-            <Route exact path={"/pastpolls"}>
-              <PastPolls />
-            </Route>
+            {isInstructor && (
+                <Route exact path={"/createpoll"}>
+                  <CreatePoll />
+                </Route>
+              ) && (
+                <Route exact path={"/join"}>
+                  <JoinPoll />
+                </Route>
+              ) && (
+                <Route exact path={"/votecontrols"}>
+                  <VoteControls />
+                </Route>
+              ) && (
+                <Route exact path={"/pastpolls"}>
+                  <PastPolls />
+                </Route>
+              )}
             <Route path={"/"}>
               <Redirect to={"/"}></Redirect>
-              <JoinPoll />
+              {isInstructor ? <ProfHome /> : <JoinPoll />}
             </Route>
           </Switch>
         </BrowserRouter>
