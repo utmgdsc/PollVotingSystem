@@ -22,10 +22,8 @@ const client = createClient({
   });
 
   for await (const line of rl) {
-    const data = line.split(",");
-    console.log(data);
-    if (data[1].trim() == "VALID") client.set(data[0].trim(), "instructor");
-    else client.del(data[0].trim());
+    console.log(line.trim());
+    client.set(line.trim(), "instructor");
   }
 })();
 
