@@ -47,37 +47,40 @@ const App = () => {
 
   return (
     <div className={"flex flex-col bg-background h-full"}>
-      <Navbar options={arr} />
-      <div className={"mx-4 flex h-full justify-center items-center"}>
-        <BrowserRouter>
+      <BrowserRouter>
+        <Navbar options={arr} />
+        <div className={"mx-4 flex h-full justify-center items-center"}>
           <Switch>
             <Route exact path={"/vote"}>
               <VotePage />
             </Route>
             {isInstructor && (
-                <Route exact path={"/createpoll"}>
-                  <CreatePoll />
-                </Route>
-              ) && (
-                <Route exact path={"/join"}>
-                  <JoinPoll />
-                </Route>
-              ) && (
-                <Route exact path={"/votecontrols"}>
-                  <VoteControls />
-                </Route>
-              ) && (
-                <Route exact path={"/pastpolls"}>
-                  <PastPolls />
-                </Route>
-              )}
+              <Route exact path={"/createpoll"}>
+                <CreatePoll />
+              </Route>
+            )}
+            {isInstructor && (
+              <Route exact path={"/join"}>
+                <JoinPoll />
+              </Route>
+            )}
+            {isInstructor && (
+              <Route exact path={"/votecontrols"}>
+                <VoteControls />
+              </Route>
+            )}
+            {isInstructor && (
+              <Route exact path={"/pastpolls"}>
+                <PastPolls />
+              </Route>
+            )}
             <Route path={"/"}>
               <Redirect to={"/"}></Redirect>
               {isInstructor ? <ProfHome /> : <JoinPoll />}
             </Route>
           </Switch>
-        </BrowserRouter>
-      </div>
+        </div>
+      </BrowserRouter>
     </div>
   );
 };
