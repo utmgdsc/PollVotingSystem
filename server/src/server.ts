@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { io } from "./socket";
 import pollRouter from "./routes/pollRoute";
 import { db } from "./db/mogoose";
+import userRouter from "./routes/userRoutes";
 db.on("open", () => {
   console.log("Connected to mongo");
 });
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
   next(new Error("Not authenticated"));
 });
 app.use("/poll", pollRouter);
+app.use("/user", userRouter);
 
 const server = app.listen(port, () => {
   console.log("Listening on http://localhost:" + port);
