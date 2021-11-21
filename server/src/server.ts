@@ -45,14 +45,18 @@ const server = app.listen(port, () => {
   console.log("Listening on http://localhost:" + port);
   io.attach(server);
   io.use(async (socket, next) => {
-    if (socket.handshake.headers.utorid != undefined) {
-      socket.data["utorid"] = socket.handshake.headers.utorid;
-      next();
-      return;
-    } else if (socket.data.utorid != undefined) {
-      next();
-      return;
+    try {
+      if (socket.handshake.headers.utorid != undefined) {
+        socket.data["utorid"] = socket.handshake.headers.utorid;
+        next();
+        return;
+      } else if (socket.data.utorid != undefined) {
+        next();
+        return;
+      }
+      next(new Error("Not Authorized"));
+    } catch (err) {
+      next(new Error("Not Authorized"));
     }
-    next(new Error("Not Authorized"));
   });
 });
