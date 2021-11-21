@@ -2,6 +2,12 @@
 
 import { Server, Socket } from "socket.io";
 import { vote, join } from "./controllers/socketController";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+
+const rateLimiter = new RateLimiterMemory({
+  points: 5, // 5 points connections
+  duration: 1, // per second
+});
 
 const io = new Server({
   path: "/socket.io",
@@ -14,12 +20,22 @@ io.on("connection", (socket: Socket) => {
 
   // let the socket join rooms once connected
   socket.on("join", async (pollCode: string) => {
-    await join(socket, pollCode);
+    try {
+      await rateLimiter.consume(socket.data.utorid);
+      await join(socket, pollCode);
 
-    // let the socket vote in the connected room
-    socket.on("vote", async (answer: number) => {
-      await vote(socket, answer, socket.data.utorid);
-    });
+      // let the socket vote in the connected room
+      socket.on("vote", async (answer: number) => {
+        try {
+          await rateLimiter.consume(socket.data.utorid);
+          await vote(socket, answer, socket.data.utorid);
+        } catch (err) {
+          socket.emit("error", { code: 2, message: "retry again later" });
+        }
+      });
+    } catch (err) {
+      socket.emit("error", { code: 2, message: "retry again later" });
+    }
   });
 });
 
