@@ -7,8 +7,25 @@ interface ChartProps {
 }
 
 export const Chart = ({ voteData }: ChartProps) => {
+  const chartLabels = ["A", "B", "C", "D", "E"];
+  const legend = voteData.map((id, val) => {
+    return (
+      <div key={id}>
+        {chartLabels[id - 1]}:{voteData[val]}
+      </div>
+    );
+  });
+
+  const totalVotes = () => {
+    let count = 0;
+    for (const [_, value] of Object.entries(voteData)) {
+      count += value;
+    }
+    return count;
+  };
+
   const chartData = {
-    labels: ["A", "B", "C", "D", "E"],
+    labels: chartLabels,
     datasets: [
       {
         label: "# of Votes",
@@ -33,9 +50,15 @@ export const Chart = ({ voteData }: ChartProps) => {
   };
 
   return (
-    <div className={"my-4"}>
+    <>
       <Header text={"Vote Results"} />
-      <Doughnut data={chartData} />
-    </div>
+      <div className={"my-4"}>
+        <Doughnut data={chartData} />
+        <div className={"text-center m1-3"}>
+          Total Votes: {totalVotes()}
+          {legend}
+        </div>
+      </div>
+    </>
   );
 };
