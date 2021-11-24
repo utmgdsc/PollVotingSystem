@@ -8,10 +8,10 @@ interface ChartProps {
 
 export const Chart = ({ voteData }: ChartProps) => {
   const chartLabels = ["A", "B", "C", "D", "E"];
-  const legend = voteData.map((id, val) => {
+  const legend = voteData.map((val, id) => {
     return (
       <div key={id}>
-        {chartLabels[id - 1]}:{voteData[val]}
+        {chartLabels[id]}:{voteData[val]}
       </div>
     );
   });
@@ -50,15 +50,13 @@ export const Chart = ({ voteData }: ChartProps) => {
   };
 
   return (
-    <>
+    <div className={"my-4"}>
       <Header text={"Vote Results"} />
-      <div className={"my-4"}>
-        <Doughnut data={chartData} />
-        <div className={"text-center m1-3"}>
-          Total Votes: {totalVotes()}
-          {legend}
-        </div>
+      <Doughnut data={chartData} />
+      <div className={"text-center m1-3"}>
+        Total Votes: {totalVotes()}
+        {legend}
       </div>
-    </>
+    </div>
   );
 };
