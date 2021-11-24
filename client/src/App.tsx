@@ -6,7 +6,6 @@ import { VotePage } from "./pages/VotePage";
 import { CreatePoll } from "./pages/CreatePoll";
 import { ProfHome } from "./pages/ProfHome";
 import { VoteControls } from "./pages/VoteControls";
-import Cookies from "universal-cookie";
 import { PastPolls } from "./pages/PastPolls";
 import { instance } from "./axios";
 import { instructor } from "./constants/constants";
@@ -22,7 +21,7 @@ const App = () => {
       href: "/pastPolls",
     },
     {
-      name: "Join Polls",
+      name: "Join Poll",
       href: "/join",
     },
   ];
@@ -86,8 +85,3 @@ const App = () => {
 };
 
 export default App;
-
-//             {/*{cookies.remove(pollIdCookie)}*/}
-//               {/*{cookies.remove(pollCodeCookie)}*/}
-// {cookies.get(pollCodeCookie) === undefined || cookies.get(pollIdCookie) === undefined ?
-//                <Redirect to={"/"}></Redirect> : <VoteControls />}

@@ -5,7 +5,11 @@ import { Header } from "../components/Header";
 import { useHistory } from "react-router-dom";
 import { instance } from "../axios";
 import Cookies from "universal-cookie";
-import { pollCodeCookie, pollIdCookie } from "../constants/constants";
+import {
+  pollCodeCookie,
+  pollCreateLoadingStatus,
+  pollIdCookie,
+} from "../constants/constants";
 import { Modal } from "../components/Modal";
 
 interface NewPoll {
@@ -26,7 +30,7 @@ export const CreatePoll = () => {
   const cookies = new Cookies();
   const [pollConfig, updatePollConfig] = useState(initialState);
   const [requiredFieldError, setRequiredFieldError] = useState("");
-  const [createPollError, setCreatePollError] = useState("");
+  const [createPollStatus, setCreatePollStatus] = useState("");
   const [_, setShowModal] = useState(true);
   const pollId = cookies.get(pollIdCookie);
   const pollCode = cookies.get(pollCodeCookie);
@@ -49,6 +53,8 @@ export const CreatePoll = () => {
   const createPollHandler = () => {
     console.log("Submitting:", pollConfig);
     // Display something when creating a poll
+    setRequiredFieldError("");
+    setCreatePollStatus(pollCreateLoadingStatus);
     if (pollConfig.courseCode.length !== 0) {
       instance
         .post("/poll", pollConfig)
@@ -60,11 +66,11 @@ export const CreatePoll = () => {
         .catch((err) => {
           // Display error after
           setRequiredFieldError("");
-          setCreatePollError("Unable to create poll");
+          setCreatePollStatus("Unable to create poll");
           console.log(err);
         });
     } else {
-      setCreatePollError("");
+      setCreatePollStatus("");
       setRequiredFieldError("Course Code is a required field");
     }
   };
@@ -122,9 +128,15 @@ export const CreatePoll = () => {
           {pollInputs}
         </div>
         <div className={"text-center mb-4"}>
-          <div className={"text-red-500"}>
+          <div
+            className={`${
+              createPollStatus === pollCreateLoadingStatus
+                ? "text-black"
+                : "text-red-500"
+            }`}
+          >
             {requiredFieldError}
-            {createPollError}
+            {createPollStatus}
           </div>
           <div className={"text-center"}></div>
         </div>
