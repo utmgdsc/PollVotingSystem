@@ -8,10 +8,10 @@ interface ChartProps {
 
 export const Chart = ({ voteData }: ChartProps) => {
   const chartLabels = ["A", "B", "C", "D", "E"];
-  const legend = voteData.map((val, id) => {
+  const legend = voteData.map((_, id) => {
     return (
       <div key={id}>
-        {chartLabels[id]}:{voteData[val]}
+        {chartLabels[id]}:{voteData[id]}
       </div>
     );
   });
