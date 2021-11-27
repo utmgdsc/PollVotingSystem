@@ -27,7 +27,7 @@ export const PastPolls = () => {
     fetchedData: false,
     status: "",
   });
-  const [csvData, setCSVData] = useState([]);
+  const [csvData, setCSVData] = useState<VoteData[]>([]);
   const headers = [
     { label: "pollID", key: "pollID" },
     { label: "pollName", key: "pollName" },
