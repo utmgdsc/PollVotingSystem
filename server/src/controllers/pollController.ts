@@ -53,9 +53,13 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
     ]);
     result[0].forEach((poll) => {
       poll.students.forEach((student) => {
+        console.log(student);
+        console.log(student.timestamp.getTime());
+        console.log(startTime.getTime());
+        console.log(endTime.getTime());
         if (
-          student.timestamp.getTime() >= startTime.getTime() &&
-          student.timestamp.getTime() <= endTime.getTime()
+          (student.timestamp.getTime() >= startTime.getTime()) &&
+          (student.timestamp.getTime() <= endTime.getTime())
         ) {
           const studentResponse = {
             pollID: poll._id.toString(),
@@ -65,10 +69,13 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
             answer: student.answer,
             timestamp: student.timestamp,
           };
+          console.log("student found");
+          console.log(studentResponse);
           responseArray.push(studentResponse);
         }
       });
     });
+    console.log(responseArray);
     return { responses: responseArray };
   } catch (err) {
     /**
