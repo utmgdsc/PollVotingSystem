@@ -40,9 +40,13 @@ pollRouter.patch("/:pollId", async (req, res) => {
   }
 });
 
-pollRouter.get("/students/:courseCode", async (req, res) => {
-  const { courseCode } = req.params;
-  const { startTime, endTime } = req.body;
+pollRouter.get("/students", async (req, res) => {
+  const courseCode = req.query.courseCode as string;
+  const startTime = req.query.startTime as string;
+  const endTime = req.query.endTime as string;
+  //const { startTime, endTime } = req.body;
+  console.log(req.query);
+  console.log(startTime, endTime);
   try {
     const result = await getStudents(
       courseCode,
