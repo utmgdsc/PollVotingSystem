@@ -1,21 +1,32 @@
-import React, { useState } from "react";
-import { useForm } from "../components/useForm";
+import React, { useEffect, useState } from "react";
 import { instance } from "../axios";
-import { CSVLink } from "react-csv";
+import { CSVDownload } from "react-csv";
+import { Button } from "../components/Button";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Header } from "../components/Header";
+import { FormInput } from "../components/FormInput";
+
+interface VoteData {
+  answer: number;
+  courseCode: string;
+  pollID: string;
+  pollName: string;
+  timestamp: string;
+  utorid: string;
+}
 
 export const PastPolls = () => {
-  // defining the initial state for the form
-  const initialState = {
+  const [pollInfo, setPollInfo] = useState({
+    startTime: new Date(),
+    endTime: new Date(),
     courseCode: "",
-    startTime: "",
-    endTime: "",
-  };
-
-  // getting the event handlers from our custom hook
-  const { onChange, onSubmit, values } = useForm(
-    downloadPollsCallback,
-    initialState
-  );
+  });
+  const [mandatoryField, setMandatoryField] = useState("");
+  const [downloadStatus, setDownloadStatus] = useState({
+    fetchedData: false,
+    status: "",
+  });
   const [csvData, setCSVData] = useState([]);
   const headers = [
     { label: "pollID", key: "pollID" },
@@ -26,71 +37,100 @@ export const PastPolls = () => {
     { label: "timestamp", key: "timestamp" },
   ];
 
-  // a submit function that will execute upon form submission
-  async function downloadPollsCallback() {
-    // send "values" to database
-    console.log(values);
-    instance
+  // Times are returned in UTC format
+  const downloadPollData = async () => {
+    if (pollInfo.courseCode === "") {
+      setMandatoryField("Course Code is required");
+      return;
+    }
+    setMandatoryField("");
+    setDownloadStatus({ ...downloadStatus, status: "Downloading..." });
+    await instance
       .get("/poll/students/", {
-        params: values,
+        params: {
+          courseCode: pollInfo.courseCode,
+          startTime: pollInfo.startTime,
+          endTime: pollInfo.endTime,
+        },
       })
       .then((res) => {
-        setCSVData(res.data.responses);
+        if (res.data.responses.length > 0) {
+          setCSVData(res.data.responses);
+          setDownloadStatus({ ...downloadStatus, fetchedData: true });
+        } else {
+          setDownloadStatus({
+            ...downloadStatus,
+            status: "No poll data found",
+          });
+        }
       })
-      .catch((err) => {
+      .catch(() => {
         // Display error after
-        console.log(err);
+        setDownloadStatus({
+          ...downloadStatus,
+          status: "Unable to download poll data",
+        });
       });
-  }
+  };
+  useEffect(() => {
+    if (downloadStatus.fetchedData) {
+      setDownloadStatus({ ...downloadStatus, fetchedData: false, status: "" });
+    }
+  }, [downloadStatus.fetchedData]);
 
   return (
-    // don't mind this ugly form :P
     <div>
-      <form onSubmit={onSubmit}>
-        <div>
-          <input
-            name="courseCode"
-            id="courseCode"
-            type="text"
-            placeholder="Course Code: (for example, CSC207)"
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div>
-          <input
-            name="startTime"
-            id="startTime"
-            type="text"
-            placeholder="Enter Time"
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div>
-          <input
-            name="endTime"
-            id="endTime"
-            type="text"
-            placeholder="Enter Time"
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div>
-          <button type="submit">Download CSV</button>
-        </div>
-      </form>
-      <div>
-        <CSVLink
-          headers={headers}
-          data={csvData}
-          filename={"data.csv"}
-          className="btn"
-        >
-          Export to CSV ⬇
-        </CSVLink>
+      <Header text={"Download Past Poll Results"} />
+      <FormInput
+        placeholder={"Course Code"}
+        onChangeHandler={(courseCode) =>
+          setPollInfo({ ...pollInfo, courseCode })
+        }
+        pollValue={pollInfo.courseCode}
+      />
+      <div className={"mt-3 text-center text-red-500"}>{mandatoryField}</div>
+      <div className={"text-center"}>
+        <Header text={"Start Time"} primary={false} />
+        <ReactDatePicker
+          className={
+            "py-2 px-4 focus:outline-none text-center border border-black"
+          }
+          selected={pollInfo.startTime}
+          showTimeSelect
+          dateFormat={"Pp"}
+          onChange={(date) => {
+            if (date instanceof Date) {
+              setPollInfo({ ...pollInfo, startTime: date });
+            }
+          }}
+        />
       </div>
+      <div className={"text-center"}>
+        <Header text={"End Time"} primary={false} />
+        <ReactDatePicker
+          className={
+            "py-2 px-4 focus:outline-none text-center border border-black"
+          }
+          selected={pollInfo.endTime}
+          showTimeSelect
+          dateFormat={"Pp"}
+          onChange={(date) => {
+            if (date instanceof Date) {
+              setPollInfo({ ...pollInfo, endTime: date });
+            }
+          }}
+        />
+      </div>
+      {downloadStatus.fetchedData ? (
+        <CSVDownload headers={headers} data={csvData} filename={"data.csv"} />
+      ) : null}
+      <Button
+        className={"mt-5"}
+        value={"Download Poll Results"}
+        onClick={() => downloadPollData()}
+      />
+
+      <div className={"text-center mt-4"}>{downloadStatus.status}</div>
     </div>
   );
 };
