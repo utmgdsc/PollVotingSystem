@@ -8,6 +8,9 @@ module.exports = {
       fontFamily: {
         sans: ["Raleway", ...defaultTheme.fontFamily.mono],
       },
+      colors: {
+        headerHov: "rgba(236,234,234,0.81)",
+      },
     },
     backgroundColor: (theme) => ({
       ...theme("colors"),

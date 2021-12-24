@@ -14,9 +14,9 @@ export const Navbar = ({ options }: NavbarProps) => {
   const history = useHistory();
   const optionLinks = options.map((option, idx) => {
     return (
-      <li className={"px-2"} key={idx}>
+      <li className={"text-center px-2"} key={idx}>
         <a
-          className={"text-sm mx-3"}
+          className={"hover:text-headerHov text-sm mx-3"}
           href={option.href}
           onClick={(e) => {
             e.preventDefault();
@@ -29,8 +29,12 @@ export const Navbar = ({ options }: NavbarProps) => {
     );
   });
   return (
-    <div className={"w-auto flex text-xl px-2 py-2 text-white bg-primary"}>
-      <a href={"/"}>MCS PollVoting</a>
+    <div
+      className={"w-auto flex text-center text-xl py-2 text-white bg-primary"}
+    >
+      <a className={"pl-3"} href={"/"}>
+        MCS PollVoting
+      </a>
       <ul className={"flex ml-auto"}>{optionLinks}</ul>
     </div>
   );

@@ -124,11 +124,13 @@ export const PastPolls = () => {
       {downloadStatus.fetchedData ? (
         <CSVDownload headers={headers} data={csvData} filename={"data.csv"} />
       ) : null}
-      <Button
-        className={"mt-5"}
-        value={"Download Poll Results"}
-        onClick={() => downloadPollData()}
-      />
+      <div className={"text-center"}>
+        <Button
+          className={"mt-5"}
+          value={"Download Poll Results"}
+          onClick={() => downloadPollData()}
+        />
+      </div>
 
       <div className={"text-center mt-4"}>{downloadStatus.status}</div>
     </div>
