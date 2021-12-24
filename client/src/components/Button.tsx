@@ -13,16 +13,16 @@ export const Button = ({
   className,
   disabled,
 }: ButtonProps) => {
-  const hi = "hi";
   return (
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`${className} ${
+      className={`${className === undefined ? "" : className}
+      ${
         disabled
           ? "cursor-not-allowed opacity-50"
           : "hover:bg-hover cursor-pointer"
-      } py-2 inline-block bg-primary px-36`}
+      } px-32 py-2 inline-block bg-primary`}
     >
       <p className={"font-bold text-xl text-white text-center"}>{value}</p>
     </button>

@@ -37,18 +37,24 @@ const App = () => {
         else setArr(empty);
         setIsInstructor(data);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        // console.error(err);
         setArr(empty);
         setIsInstructor(false);
       });
   }, [isInstructor]);
 
   return (
-    <div className={"flex flex-col bg-background h-full"}>
+    <div
+      className={
+        "h-screen overflow-x-hidden overflow-y-auto flex flex-col bg-background h-full"
+      }
+    >
       <BrowserRouter>
         <Navbar options={arr} />
-        <div className={"mx-4 flex h-full justify-center items-center"}>
+        <div
+          className={"mx-4 flex-wrap flex h-full justify-center items-center"}
+        >
           <Switch>
             <Route exact path={"/vote"}>
               <VotePage />

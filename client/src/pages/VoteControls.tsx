@@ -73,14 +73,8 @@ export const VoteControls = () => {
       socket.connect();
     }
     socket.emit("join", pollCode);
-    //
-    // // on error go back to join page
-    // socket.on("error", () => {
-    //   console.log("error");
-    //   // setConnected(false);
-    // });
+
     const resultHandler = (e: Result[]) => {
-      console.log(e);
       const newVoteData = [...voteData];
       for (let i = 0; i < e.length; i++) {
         newVoteData[e[i]._id - 1] = e[i].count;

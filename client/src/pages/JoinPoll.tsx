@@ -14,8 +14,6 @@ export const JoinPoll = () => {
   const joinPollRoomHandler = () => {
     // Check if the room exists here
     if (pollCode.length !== 0) {
-      console.log("Button was submitted");
-      console.log(`Poll Code is: ${pollCode}`);
       cookies.set(pollCodeCookie, pollCode, { path: "/" });
       history.push("/vote");
     }

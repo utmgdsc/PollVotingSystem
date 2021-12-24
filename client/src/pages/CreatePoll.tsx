@@ -51,7 +51,6 @@ export const CreatePoll = () => {
   };
 
   const createPollHandler = () => {
-    console.log("Submitting:", pollConfig);
     // Display something when creating a poll
     setRequiredFieldError("");
     setCreatePollStatus(pollCreateLoadingStatus);
@@ -63,11 +62,11 @@ export const CreatePoll = () => {
           cookies.set(pollIdCookie, res.data.pollId, { path: "/" });
           history.push("/votecontrols");
         })
-        .catch((err) => {
+        .catch(() => {
           // Display error after
           setRequiredFieldError("");
           setCreatePollStatus("Unable to create poll");
-          console.log(err);
+          // console.error(err);
         });
     } else {
       setCreatePollStatus("");
@@ -97,14 +96,9 @@ export const CreatePoll = () => {
   };
 
   const disconnectAllStudents = () => {
-    instance
-      .patch(`/poll/end/${pollCode}`)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    instance.patch(`/poll/end/${pollCode}`).catch(() => {
+      // console.error(e);
+    });
   };
 
   return (

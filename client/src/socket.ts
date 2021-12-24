@@ -4,5 +4,5 @@ export const socket = io(`${process.env.REACT_APP_BACKEND_URL}`, {
 });
 
 socket.on("connect", () => {
-  console.log("Connected");
+  // console.debug("Connected");
 });
