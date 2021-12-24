@@ -11,9 +11,9 @@ export const Modal = ({ showModal, onClick, children }: ModalProps) => {
     <div
       className={`fixed ${
         showModal ? "" : "hidden"
-      } inset-0 bg-gray-700 bg-opacity-100 overflow-y-auto h-full w-full`}
+      }  inset-0 bg-gray-700 bg-opacity-100 overflow-y-auto h-full w-full`}
     >
-      <div className={"flex h-full items-center justify-center"}>
+      <div className={"flex-wrap flex h-full items-center justify-center"}>
         <div className={"w-4/12 bg-white"}>
           <div onClick={() => onClick()} className={"flex"}>
             <div
