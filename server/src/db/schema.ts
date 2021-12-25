@@ -9,6 +9,7 @@ export interface Student {
   utorid: string;
   answer: number;
   timestamp: Date;
+  sequence: number;
 }
 
 const student = new Schema<Student>(
@@ -23,6 +24,10 @@ const student = new Schema<Student>(
     },
     timestamp: {
       type: Date,
+      required: true,
+    },
+    sequence: {
+      type: Number,
       required: true,
     },
   },
