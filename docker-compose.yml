@@ -12,8 +12,7 @@ services:
           - redis
     volumes:
       - RedisVolume:/data
-    command: redis-server --requirepass password
-
+    command: redis-server --appendonly yes --requirepass password
   mongodb:
     container_name: mongo
     image: mongo:4.4
