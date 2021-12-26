@@ -30,9 +30,30 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
       status: 400,
       data: { message: "hasStarted should be boolean" },
     };
-  await client.set(pollId, hasStarted.toString(), {
-    EX: expiry,
-  });
+  const currSequence = await client.get(pollId);
+  console.log("currSequence", currSequence);
+  let newSequence;
+  // on every new start increment the sequence counter
+  if (hasStarted) {
+    if (currSequence == null) newSequence = 0;
+    else newSequence = parseInt(currSequence);
+    if (newSequence < 0) newSequence *= -1;
+    newSequence++;
+    console.log("newSequence", newSequence);
+    await client.set(pollId, newSequence.toString(), {
+      EX: expiry,
+    });
+  }
+  // for every stop make the current counter negative to indicate that it is not an active sequence
+  else {
+    if (currSequence != null) {
+      newSequence = parseInt(currSequence) * -1;
+      await client.set(pollId, newSequence.toString(), {
+        EX: expiry,
+      });
+      console.log("newSequence", newSequence);
+    }
+  }
   io.to(pollId).emit("pollStarted", hasStarted);
   return { status: 200, data: { message: "poll status successfully changed" } };
 }
@@ -58,8 +79,8 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
         console.log(startTime.getTime());
         console.log(endTime.getTime());
         if (
-          (student.timestamp.getTime() >= startTime.getTime()) &&
-          (student.timestamp.getTime() <= endTime.getTime())
+          student.timestamp.getTime() >= startTime.getTime() &&
+          student.timestamp.getTime() <= endTime.getTime()
         ) {
           const studentResponse = {
             pollID: poll._id.toString(),
@@ -89,14 +110,15 @@ async function getPollStatus(pollId: any) {
   if (pollId === null || pollId === undefined || typeof pollId !== "string")
     return { status: 400, data: { message: "Invalid poll Id" } };
   const result = await client.get(pollId);
-  const pollStarted = result === null ? false : result === "false" ? false : true;
+  const pollStarted = result === null ? false : parseInt(result) > 0;
   return { status: 200, data: { pollStarted } };
 }
 
 async function getResult(pollId: any) {
   if (pollId === null || pollId === undefined || typeof pollId !== "string")
     return { status: 400, data: { message: "Invalid poll Id" } };
-  const result = await pollResult(pollId);
+  const currSequence = await client.get(pollId);
+  const result = await pollResult(pollId, parseInt(currSequence));
   return { status: 200, data: { result } };
 }
 

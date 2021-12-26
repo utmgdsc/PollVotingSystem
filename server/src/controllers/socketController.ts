@@ -1,8 +1,8 @@
-import {PollModel} from "../db/mogoose";
-import {io} from "../socket";
-import {Socket} from "socket.io";
-import {client} from "../redis";
-import {ObjectId} from "../db/schema";
+import { PollModel } from "../db/mogoose";
+import { io } from "../socket";
+import { Socket } from "socket.io";
+import { client } from "../redis";
+import { ObjectId } from "../db/schema";
 
 async function join(socket: Socket, pollCode: string) {
   try {
@@ -13,28 +13,33 @@ async function join(socket: Socket, pollCode: string) {
     console.log(pollId);
     if (pollId === null) throw { code: 1, message: "Invalid poll code" };
 
-        // ensure that socket is connected to 1 room (other than the default room)
-        socket.rooms.forEach((room) => {
-            if (room !== socket.id) socket.leave(room);
-        });
-        const hasStarted = await client.get(pollId);
-        console.log("Has Started", hasStarted);
-        socket.join(pollId);
-        socket.data["pollId"] = pollId;
-        io.to(socket.id).emit("pollStarted", hasStarted === null || hasStarted === "false" ? false : true );
-    } catch (err) {
-        console.log(err);
-        io.to(socket.id).emit("error", err);
-    }
+    // ensure that socket is connected to 1 room (other than the default room)
+    socket.rooms.forEach((room) => {
+      if (room !== socket.id) socket.leave(room);
+    });
+
+    const currSequence = await client.get(pollId);
+    const hasStarted =
+      currSequence == null ? false : parseInt(currSequence) > 0;
+    console.log("Has Started", hasStarted);
+    socket.join(pollId);
+    socket.data["pollId"] = pollId;
+    io.to(socket.id).emit("pollStarted", hasStarted);
+  } catch (err) {
+    console.log(err);
+    io.to(socket.id).emit("error", err);
+  }
 }
 
-async function pollResult(pollId: string) {
+async function pollResult(pollId: string, seq: number) {
   try {
     const result = await PollModel.aggregate([
       { $match: { _id: new ObjectId(pollId) } },
       { $unwind: "$students" },
+      { $match: { "students.sequence": seq } },
       { $group: { _id: "$students.answer", count: { $sum: 1 } } },
     ]);
+    console.log(result);
     return result;
   } catch (err) {
     console.log(err);
@@ -47,13 +52,9 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     let pollId = socket.data.pollId;
     if (pollId === null || pollId === undefined)
       throw { code: 1, message: "haven't joined any room" };
-    const hasStarted = await client.get(pollId);
-    console.log(hasStarted);
-    if (
-      hasStarted === null ||
-      hasStarted === undefined ||
-      hasStarted.localeCompare(true.toString()) !== 0
-    ) {
+    const currSequence = await client.get(pollId);
+    console.log(currSequence);
+    if (currSequence === null || parseInt(currSequence) < 0) {
       throw { code: 2, message: "Poll not live yet" };
     }
 
@@ -62,21 +63,41 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     if (answer === undefined || answer === null)
       throw { code: 2, message: "Invalid answer" };
 
-    await PollModel.updateOne(
+    const result = await PollModel.updateOne(
       {
         _id: pollId,
+        students: {
+          $elemMatch: {
+            utorid: utorid,
+            sequence: parseInt(currSequence),
+          },
+        },
       },
       {
-        $addToSet: {
-          students: {
-            utorid,
-            answer,
-            timestamp: new Date(),
-          },
+        $set: {
+          "students.$.answer": answer,
+          "students.$.timestamp": new Date(),
         },
       }
     );
-    pollResult(pollId).then((data) => {
+
+    if (result.modifiedCount == 0)
+      await PollModel.updateOne(
+        {
+          _id: pollId,
+        },
+        {
+          $addToSet: {
+            students: {
+              utorid,
+              sequence: parseInt(currSequence),
+              answer,
+              timestamp: new Date(),
+            },
+          },
+        }
+      );
+    pollResult(pollId, parseInt(currSequence)).then((data) => {
       io.to(pollId).emit("result", data);
     });
     return;
