@@ -59,6 +59,7 @@ export const VotePage = () => {
       if (data) {
         const audio = new Audio("/newQuestion.wav");
         audio.play();
+        setSelectionOption("");
         if (!isFocus) {
           document.title = questionStarted;
         }
