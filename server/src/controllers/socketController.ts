@@ -31,13 +31,15 @@ async function join(socket: Socket, pollCode: string) {
   }
 }
 
-async function pollResult(pollId: string) {
+async function pollResult(pollId: string, seq: number) {
   try {
     const result = await PollModel.aggregate([
       { $match: { _id: new ObjectId(pollId) } },
       { $unwind: "$students" },
+      { $match: { "students.sequence": seq } },
       { $group: { _id: "$students.answer", count: { $sum: 1 } } },
     ]);
+    console.log(result);
     return result;
   } catch (err) {
     console.log(err);
@@ -61,24 +63,15 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     if (answer === undefined || answer === null)
       throw { code: 2, message: "Invalid answer" };
 
-    await PollModel.updateOne(
+    const result = await PollModel.updateOne(
       {
         _id: pollId,
-      },
-      {
-        $addToSet: {
-          students: {
-            utorid,
+        students: {
+          $elemMatch: {
+            utorid: utorid,
             sequence: parseInt(currSequence),
           },
         },
-      }
-    );
-    await PollModel.updateOne(
-      {
-        _id: pollId,
-        "students.utorid": utorid,
-        "students.sequence": parseInt(currSequence),
       },
       {
         $set: {
@@ -87,7 +80,24 @@ async function vote(socket: Socket, answer: number, utorid: string) {
         },
       }
     );
-    pollResult(pollId).then((data) => {
+
+    if (result.modifiedCount == 0)
+      await PollModel.updateOne(
+        {
+          _id: pollId,
+        },
+        {
+          $addToSet: {
+            students: {
+              utorid,
+              sequence: parseInt(currSequence),
+              answer,
+              timestamp: new Date(),
+            },
+          },
+        }
+      );
+    pollResult(pollId, parseInt(currSequence)).then((data) => {
       io.to(pollId).emit("result", data);
     });
     return;
