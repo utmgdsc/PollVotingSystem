@@ -34,21 +34,6 @@ export const VoteControls = () => {
   }
 
   useEffect(() => {
-    const fetchPollStatus = async () => {
-      if (pollId !== undefined) {
-        await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
-          const pollStarted = res.data.pollStarted;
-          if (pollStarted !== pollStatus.pollStarted) {
-            const newStatus = { ...pollStatus };
-            newStatus.pollStarted = pollStarted;
-            newStatus.status = pollStarted ? "Active" : "Inactive";
-            setPollStatus(newStatus);
-          }
-        });
-      }
-    };
-    fetchPollStatus();
-
     const fetchPollResults = async () => {
       if (pollId !== undefined) {
         await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
@@ -68,6 +53,23 @@ export const VoteControls = () => {
       }
     };
     fetchPollResults();
+  }, []);
+
+  useEffect(() => {
+    const fetchPollStatus = async () => {
+      if (pollId !== undefined) {
+        await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
+          const pollStarted = res.data.pollStarted;
+          if (pollStarted !== pollStatus.pollStarted) {
+            const newStatus = { ...pollStatus };
+            newStatus.pollStarted = pollStarted;
+            newStatus.status = pollStarted ? "Active" : "Inactive";
+            setPollStatus(newStatus);
+          }
+        });
+      }
+    };
+    fetchPollStatus();
 
     if (!socket.connected) {
       socket.connect();
@@ -75,7 +77,7 @@ export const VoteControls = () => {
     socket.emit("join", pollCode);
 
     const resultHandler = (e: Result[]) => {
-      const newVoteData = [...voteData];
+      const newVoteData = [0, 0, 0, 0, 0];
       for (let i = 0; i < e.length; i++) {
         newVoteData[e[i]._id - 1] = e[i].count;
       }
