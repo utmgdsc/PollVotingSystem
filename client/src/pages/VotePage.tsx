@@ -3,7 +3,11 @@ import { PollOptionButton } from "../components/PollOptionButton";
 import { Header } from "../components/Header";
 import Cookies from "universal-cookie";
 import { Redirect, useHistory } from "react-router-dom";
-import { pollCodeCookie } from "../constants/constants";
+import {
+  mcsPollVoting,
+  pollCodeCookie,
+  questionStarted,
+} from "../constants/constants";
 import { socket } from "../socket";
 
 export const VotePage = () => {
@@ -14,9 +18,25 @@ export const VotePage = () => {
 
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
+  const [isFocus, setFocus] = useState(true);
+
+  const onBlur = () => {
+    setFocus(false);
+  };
+
+  const onFocus = () => {
+    document.title = mcsPollVoting;
+    setFocus(true);
+  };
 
   useEffect(() => {
     socket.emit("join", pollCode);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   useEffect(() => {
@@ -25,9 +45,9 @@ export const VotePage = () => {
     }
 
     const errorHandler = (e: any) => {
-      console.log("error");
-      console.log(e.code);
-      console.log(e.message);
+      // console.error("error");
+      // console.error(e.code);
+      // console.error(e.message);
       setErrorCode(e.code);
     };
 
@@ -35,14 +55,20 @@ export const VotePage = () => {
     socket.on("error", errorHandler);
 
     const pollStartedHandler = (data: any) => {
-      console.log("Poll Started", data);
       setStarted(data);
+      if (data) {
+        const audio = new Audio("/newQuestion.wav");
+        audio.play();
+        setSelectionOption("");
+        if (!isFocus) {
+          document.title = questionStarted;
+        }
+      }
     };
 
     socket.on("pollStarted", pollStartedHandler);
 
     const pollClosedHandler = (data: any) => {
-      console.log(data);
       cookies.remove(pollCodeCookie);
       history.replace("/");
     };
@@ -56,8 +82,8 @@ export const VotePage = () => {
   }, [errorCode, started, selectedOption]);
 
   const pollButtonHandler = (selectedOption: string) => {
-    console.log("Selected:", selectedOption);
-    console.log((selectedOption.charCodeAt(0) % 65) + 1);
+    // console.log("Selected:", selectedOption);
+    // console.log((selectedOption.charCodeAt(0) % 65) + 1);
     socket.emit("vote", (selectedOption.charCodeAt(0) % 65) + 1);
     setSelectionOption(selectedOption);
   };

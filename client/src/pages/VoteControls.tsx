@@ -34,21 +34,6 @@ export const VoteControls = () => {
   }
 
   useEffect(() => {
-    const fetchPollStatus = async () => {
-      if (pollId !== undefined) {
-        await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
-          const pollStarted = res.data.pollStarted;
-          if (pollStarted !== pollStatus.pollStarted) {
-            const newStatus = { ...pollStatus };
-            newStatus.pollStarted = pollStarted;
-            newStatus.status = pollStarted ? "Active" : "Inactive";
-            setPollStatus(newStatus);
-          }
-        });
-      }
-    };
-    fetchPollStatus();
-
     const fetchPollResults = async () => {
       if (pollId !== undefined) {
         await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
@@ -68,20 +53,31 @@ export const VoteControls = () => {
       }
     };
     fetchPollResults();
+  }, []);
+
+  useEffect(() => {
+    const fetchPollStatus = async () => {
+      if (pollId !== undefined) {
+        await instance.get(`/poll/status?pollId=${pollId}`).then((res) => {
+          const pollStarted = res.data.pollStarted;
+          if (pollStarted !== pollStatus.pollStarted) {
+            const newStatus = { ...pollStatus };
+            newStatus.pollStarted = pollStarted;
+            newStatus.status = pollStarted ? "Active" : "Inactive";
+            setPollStatus(newStatus);
+          }
+        });
+      }
+    };
+    fetchPollStatus();
 
     if (!socket.connected) {
       socket.connect();
     }
     socket.emit("join", pollCode);
-    //
-    // // on error go back to join page
-    // socket.on("error", () => {
-    //   console.log("error");
-    //   // setConnected(false);
-    // });
+
     const resultHandler = (e: Result[]) => {
-      console.log(e);
-      const newVoteData = [...voteData];
+      const newVoteData = [0, 0, 0, 0, 0];
       for (let i = 0; i < e.length; i++) {
         newVoteData[e[i]._id - 1] = e[i].count;
       }
@@ -99,7 +95,10 @@ export const VoteControls = () => {
       case "start":
         instance
           .patch(`/poll/${cookies.get(pollIdCookie)}`, { hasStarted: true })
-          .then(() => setPollStatus({ status: "Active", pollStarted: true }))
+          .then(() => {
+            setPollStatus({ status: "Active", pollStarted: true });
+            setVoteData([0, 0, 0, 0, 0]);
+          })
           .catch(() => {
             setPollStatus({ ...pollStatus, status: "Unable to start poll" });
           });
