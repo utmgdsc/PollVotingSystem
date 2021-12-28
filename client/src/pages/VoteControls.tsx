@@ -95,7 +95,10 @@ export const VoteControls = () => {
       case "start":
         instance
           .patch(`/poll/${cookies.get(pollIdCookie)}`, { hasStarted: true })
-          .then(() => setPollStatus({ status: "Active", pollStarted: true }))
+          .then(() => {
+            setPollStatus({ status: "Active", pollStarted: true });
+            setVoteData([0, 0, 0, 0, 0]);
+          })
           .catch(() => {
             setPollStatus({ ...pollStatus, status: "Unable to start poll" });
           });

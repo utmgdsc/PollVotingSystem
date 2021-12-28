@@ -29,19 +29,22 @@ const App = () => {
   const [isInstructor, setIsInstructor] = useState(false);
   const [arr, setArr] = useState(empty);
   useEffect(() => {
-    instance
-      .get("/user")
-      .then((res) => {
-        const data = res.data.userType === instructor;
-        if (data) setArr(options);
-        else setArr(empty);
-        setIsInstructor(data);
-      })
-      .catch(() => {
-        // console.error(err);
-        setArr(empty);
-        setIsInstructor(false);
-      });
+    const getUserStatus = async () => {
+      await instance
+        .get("/user")
+        .then((res) => {
+          const data = res.data.userType === instructor;
+          if (data) setArr(options);
+          else setArr(empty);
+          setIsInstructor(data);
+        })
+        .catch(() => {
+          // console.error(err);
+          setArr(empty);
+          setIsInstructor(false);
+        });
+    };
+    getUserStatus();
   }, [isInstructor]);
 
   return (
@@ -59,26 +62,18 @@ const App = () => {
             <Route exact path={"/vote"}>
               <VotePage />
             </Route>
-            {isInstructor && (
-              <Route exact path={"/createpoll"}>
-                <CreatePoll />
-              </Route>
-            )}
-            {isInstructor && (
-              <Route exact path={"/join"}>
-                <JoinPoll />
-              </Route>
-            )}
-            {isInstructor && (
-              <Route exact path={"/votecontrols"}>
-                <VoteControls />
-              </Route>
-            )}
-            {isInstructor && (
-              <Route exact path={"/pastpolls"}>
-                <PastPolls />
-              </Route>
-            )}
+            <Route exact path={"/createpoll"}>
+              {isInstructor ? <CreatePoll /> : <JoinPoll />}
+            </Route>
+            <Route exact path={"/join"}>
+              {isInstructor && <JoinPoll />}
+            </Route>
+            <Route exact path={"/votecontrols"}>
+              {isInstructor ? <VoteControls /> : <JoinPoll />}
+            </Route>
+            <Route exact path={"/pastpolls"}>
+              {isInstructor ? <PastPolls /> : <JoinPoll />}
+            </Route>
             <Route path={"/"}>
               <Redirect to={"/"}></Redirect>
               {isInstructor ? <ProfHome /> : <JoinPoll />}
