@@ -62,11 +62,11 @@ const App = () => {
             <Route exact path={"/vote"}>
               <VotePage />
             </Route>
+            <Route exact path={"/join"}>
+              <JoinPoll />
+            </Route>
             <Route exact path={"/createpoll"}>
               {isInstructor ? <CreatePoll /> : <JoinPoll />}
-            </Route>
-            <Route exact path={"/join"}>
-              {isInstructor && <JoinPoll />}
             </Route>
             <Route exact path={"/votecontrols"}>
               {isInstructor ? <VoteControls /> : <JoinPoll />}
