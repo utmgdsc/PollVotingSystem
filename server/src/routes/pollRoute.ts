@@ -16,7 +16,7 @@ pollRouter.post("/", async (req, res) => {
     const poll = {
       name,
       description,
-      courseCode,
+      courseCode: courseCode.toUpperCase(),
       options,
       created: new Date(),
     };
@@ -49,7 +49,7 @@ pollRouter.get("/students", async (req, res) => {
   console.log(startTime, endTime);
   try {
     const result = await getStudents(
-      courseCode,
+      courseCode.toUpperCase(),
       new Date(startTime),
       new Date(endTime)
     );
