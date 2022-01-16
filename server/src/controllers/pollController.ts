@@ -1,13 +1,10 @@
 import { Poll } from "../db/schema";
-import { PollModel } from "../db/mogoose";
+import { PollModel, StudentModel } from "../db/mogoose";
 import { io } from "../socket";
 import { client } from "../redis";
 import { customAlphabet } from "nanoid/async";
 import { pollResult } from "./socketController";
-const nanoid = customAlphabet(
-  "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890",
-  6
-);
+const nanoid = customAlphabet("qwertyuiopasdfghjklzxcvbnm1234567890", 6);
 
 // set poll code expiry to 1 day
 const expiry = 60 * 60 * 24;
@@ -60,26 +57,39 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
 
 async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
   try {
-    const result = await PollModel.aggregate([
-      { $match: { courseCode } },
-      { $unwind: "$students" },
-      { $match: { "students.timestamp": { $gte: startTime, $lte: endTime } } },
-      {
-        $project: {
-          _id: 0,
-          courseCode: 1,
-          pollName: "$name",
-          pollCode: { $toString: "$_id" },
-          utorid: "$students.utorid",
-          answer: "$students.answer",
-          timestamp: "$students.timestamp",
-          sequence: "$students.sequence",
-        },
-      },
-    ]);
-
-    console.log(result);
-    return { responses: result };
+    const pollDoc = await PollModel.find({ courseCode });
+    let promises: Promise<any>[] = [];
+    let responses: any[] = [];
+    console.log(62, pollDoc);
+    pollDoc.forEach((element) => {
+      console.log(67, element._id);
+      promises.push(
+        StudentModel.find(
+          {
+            pollId: element._id.toString(),
+            timestamp: { $gte: startTime, $lte: endTime },
+          },
+          {
+            _id: 0,
+            pollId: 1,
+            courseCode,
+            sequence: 1,
+            utorid: 1,
+            timestamp: 1,
+            pollName: element.name,
+            answer: 1,
+          }
+        ).then((data) => {
+          data.forEach((val) => {
+            console.log(75, val);
+            responses.push(val);
+          });
+        })
+      );
+    });
+    await Promise.all(promises);
+    console.log(responses);
+    return { responses };
   } catch (err) {
     /**
      * TODO: Add error handler

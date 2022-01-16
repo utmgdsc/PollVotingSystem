@@ -10,29 +10,33 @@ export interface Student {
   answer: number;
   timestamp: Date;
   sequence: number;
+  pollId: string;
 }
 
-const student = new Schema<Student>(
-  {
-    utorid: {
-      type: String,
-      required: true,
-    },
-    answer: {
-      type: Number,
-      required: true,
-    },
-    timestamp: {
-      type: Date,
-      required: true,
-    },
-    sequence: {
-      type: Number,
-      required: true,
-    },
+export interface StudentDocument extends Student, Document {}
+
+export const studentSchema = new Schema<StudentDocument>({
+  utorid: {
+    type: String,
+    required: true,
   },
-  { _id: false }
-);
+  answer: {
+    type: Number,
+    required: true,
+  },
+  timestamp: {
+    type: Date,
+    required: true,
+  },
+  sequence: {
+    type: Number,
+    required: true,
+  },
+  pollId: {
+    type: String,
+    required: true,
+  },
+});
 
 /**
  * Poll schema. Represents how a single poll will look like
@@ -51,7 +55,6 @@ export interface Poll {
   courseCode: string;
   created: Date;
   options?: number;
-  students?: Student[];
 }
 
 export interface PollDocument extends Poll, Document {}
@@ -62,7 +65,6 @@ export const pollSchema = new Schema<PollDocument>({
   courseCode: { type: String, required: true },
   created: { type: Date, required: true },
   options: Number,
-  students: [student],
 });
 
 export const ObjectId = Types.ObjectId;
