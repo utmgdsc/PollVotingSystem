@@ -94,6 +94,7 @@ export const VotePage = () => {
       const optionValue = String.fromCharCode(i);
       pollOptionButtons.push(
         <PollOptionButton
+          selected={selectedOption === optionValue}
           key={i}
           onClick={() => pollButtonHandler(optionValue)}
           name={optionValue}

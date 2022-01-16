@@ -6,7 +6,7 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 
 const rateLimiter = new RateLimiterMemory({
   points: 5, // 5 points connections
-  duration: 1, // per second
+  duration: 3, // per second
 });
 
 const io = new Server({
