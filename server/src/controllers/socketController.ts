@@ -1,4 +1,4 @@
-import { PollModel } from "../db/mogoose";
+import { PollModel, StudentModel } from "../db/mogoose";
 import { io } from "../socket";
 import { Socket } from "socket.io";
 import { client } from "../redis";
@@ -31,13 +31,24 @@ async function join(socket: Socket, pollCode: string) {
   }
 }
 
-async function pollResult(pollId: string, seq: number) {
+async function pollResult(pollId: string, sequence: number) {
   try {
-    const result = await PollModel.aggregate([
-      { $match: { _id: new ObjectId(pollId) } },
-      { $unwind: "$students" },
-      { $match: { "students.sequence": seq } },
-      { $group: { _id: "$students.answer", count: { $sum: 1 } } },
+    // const result = await PollModel.aggregate([
+    //   { $match: { _id: new ObjectId(pollId) } },
+    //   { $unwind: "$students" },
+    //   { $match: { "students.sequence": seq } },
+    //   { $sort: { "students.timestamp": 1 } },
+    //   {
+    //     $group: {
+    //       _id: "$students.utorid",
+    //       answer: { $last: "$students.answer" },
+    //     },
+    //   },
+    //   { $group: { _id: "$answer", count: { $sum: 1 } } },
+    // ]);
+    const result = await StudentModel.aggregate([
+      { $match: { pollId, sequence } },
+      { $group: { _id: "$answer", count: { $sum: 1 } } },
     ]);
     console.log(result);
     return result;
@@ -63,40 +74,38 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     if (answer === undefined || answer === null)
       throw { code: 2, message: "Invalid answer" };
 
-    const result = await PollModel.updateOne(
+    // const result = await PollModel.updateOne(
+    //   {
+    //     _id: pollId,
+    //     students: {
+    //       $elemMatch: {
+    //         utorid: utorid,
+    //         sequence: parseInt(currSequence),
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $set: {
+    //       "students.$.answer": answer,
+    //       "students.$.timestamp": new Date(),
+    //     },
+    //   }
+    // );
+
+    //if (result.modifiedCount == 0)
+    await StudentModel.updateOne(
       {
-        _id: pollId,
-        students: {
-          $elemMatch: {
-            utorid: utorid,
-            sequence: parseInt(currSequence),
-          },
-        },
+        pollId,
+        sequence: parseInt(currSequence),
       },
       {
-        $set: {
-          "students.$.answer": answer,
-          "students.$.timestamp": new Date(),
-        },
-      }
+        utorid,
+        sequence: parseInt(currSequence),
+        answer,
+        timestamp: new Date(),
+      },
+      { upsert: true }
     );
-
-    if (result.modifiedCount == 0)
-      await PollModel.updateOne(
-        {
-          _id: pollId,
-        },
-        {
-          $addToSet: {
-            students: {
-              utorid,
-              sequence: parseInt(currSequence),
-              answer,
-              timestamp: new Date(),
-            },
-          },
-        }
-      );
     pollResult(pollId, parseInt(currSequence)).then((data) => {
       io.to(pollId).emit("result", data);
     });
