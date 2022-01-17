@@ -57,8 +57,6 @@ export const PastPolls = () => {
       })
       .then((res) => {
         if (res.data.responses.length > 0) {
-          // eslint-disable-next-line no-console
-          console.log(res.data.responses);
           setCSVData(res.data.responses);
           setDownloadStatus({ ...downloadStatus, fetchedData: true });
         } else {
