@@ -77,6 +77,7 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
             utorid: 1,
             timestamp: 1,
             pollName: element.name,
+            description: element.description,
             answer: 1,
           }
         ).then((data) => {
