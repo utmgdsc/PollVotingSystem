@@ -36,6 +36,7 @@ export const PastPolls = () => {
     { label: "question", key: "sequence" },
     { label: "answer", key: "answer" },
     { label: "timestamp", key: "timestamp" },
+    { label: "description", key: "description" },
   ];
 
   // Times are returned in UTC format
@@ -56,6 +57,8 @@ export const PastPolls = () => {
       })
       .then((res) => {
         if (res.data.responses.length > 0) {
+          // eslint-disable-next-line no-console
+          console.log(res.data.responses);
           setCSVData(res.data.responses);
           setDownloadStatus({ ...downloadStatus, fetchedData: true });
         } else {
