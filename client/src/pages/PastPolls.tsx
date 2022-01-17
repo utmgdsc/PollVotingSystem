@@ -32,6 +32,7 @@ export const PastPolls = () => {
     { label: "pollId", key: "pollId" },
     { label: "pollName", key: "pollName" },
     { label: "courseCode", key: "courseCode" },
+    { label: "description", key: "description" },
     { label: "utorid", key: "utorid" },
     { label: "question", key: "sequence" },
     { label: "answer", key: "answer" },
