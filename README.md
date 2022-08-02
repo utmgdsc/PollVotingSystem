@@ -1,5 +1,20 @@
-# QuizVotingSystem
-MCS Project with Prof. Zingaro and Ilir
+
+
+<h1 align="center">
+  <p align="center">MCS Poll Voting System</p>
+  <p align="center" width="100%"></p>
+  <h4 align="center">MCS Project with Prof. Zingaro and Ilir
+</h4>
+  <p align="center" width="100%">
+    <a href="https://poll.utm.utoronto.ca/">poll.utm.utoronto.ca/</a>
+  </p>
+</h1>
+
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#running-the-app-on-a-server">Running the App (Server)</a> •
+  <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a>
+</p>
 
 ### Installation
 
@@ -8,6 +23,7 @@ MCS Project with Prof. Zingaro and Ilir
 - Yarn >= 2+
 - Node 14.17.0
 - Latest version of Docker and Docker-Compose
+
 
 2. Install the dependencies for the client
 
@@ -24,6 +40,7 @@ yarn install
 ```
 
 ### Running the app (on a server)
+Note: The app installation assumes you already have Shibboleth.
 
 1. Setting up the client `.env` file (Placed in the root of your `client` folder)
 
