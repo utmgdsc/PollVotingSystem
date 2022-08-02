@@ -23,9 +23,40 @@ cd server
 yarn install
 ```
 
-### Running the entire app (Docker-Compose)
+### Running the app (on a server)
 
-Coming soon...
+1. Setting up the client `.env` file (Placed in the root of your `client` folder)
+
+```
+REACT_APP_BACKEND_URL="http://voteapi:5000"
+```
+
+2. Setting up the server `.env` file (Placed in the root of your `server` folder)
+
+```
+PORT=3001
+MONGODB_URL="mongodb://mongodb:27017/quiz"
+FRONTEND_URL="http://frontend:5000"
+REDIS_URL="redis://default:password@redis:6379"
+WHITELIST=../whitelist
+```
+
+3. Add instructor Utorid's to your whitelist file. It should be placed at the root of the `server` folder.
+
+> Your whitelist file should look like the following...
+
+```
+utorid1
+utorid2
+utorid3
+...
+```
+
+4. Running the entire app
+
+```
+docker-compose -up --build -d
+```
 
 ### Running the app (Locally/Debugging Purposes)
 
@@ -41,7 +72,7 @@ docker-compose up --build -d
 
 #### Client Setup
 
-1. Setting up the client `.env` file
+1. Setting up the client `.env` file (Placed in the root of your `client` folder)
 
 ```
 REACT_APP_BACKEND_URL="http://localhost:3001"
@@ -92,7 +123,7 @@ utorid3
 ...
 ```
 
-2. Setting up the server `.env` file
+2. Setting up the server `.env` file (Placed in the root of your `server` folder)
 
 ```
 PPORT=3001
