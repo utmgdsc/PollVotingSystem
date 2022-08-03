@@ -40,7 +40,7 @@ yarn install
 ```
 
 ### Running the app (on a server)
-Note: The app installation assumes you already have Shibboleth.
+Note: The app installation assumes you already have Shibboleth installed on the server.
 
 1. Setting up the client `.env` file (Placed in the root of your `client` folder)
 
