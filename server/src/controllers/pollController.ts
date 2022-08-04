@@ -32,7 +32,6 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
   let newSequence;
   // on every new start increment the sequence counter
   if (hasStarted) {
-    console.log("AAAAAA")
     if (currSequence == null) newSequence = 0;
     else newSequence = parseInt(currSequence);
     if (newSequence < 0) newSequence *= -1;
