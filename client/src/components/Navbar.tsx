@@ -1,5 +1,7 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import { socket } from "../socket";
+import { voteControlsPath } from "../constants/constants";
 
 interface NavbarProps {
   options: Array<Option>;
@@ -11,6 +13,13 @@ export interface Option {
 }
 
 export const Navbar = ({ options }: NavbarProps) => {
+  const location = useLocation();
+  const [totalVotes, setTotalVotes] = useState(0);
+  const resultHandler = (res: []) => {
+    setTotalVotes(res.length);
+  };
+  socket.on("result", resultHandler);
+
   const history = useHistory();
   const optionLinks = options.map((option, idx) => {
     return (
@@ -35,6 +44,12 @@ export const Navbar = ({ options }: NavbarProps) => {
       <a className={"pl-3"} href={"/"}>
         MCS PollVoting
       </a>
+      {location.pathname === voteControlsPath ? (
+        <div className={"pl-5"}>Votes: {totalVotes}</div>
+      ) : (
+        <></>
+      )}
+
       <ul className={"flex ml-auto"}>{optionLinks}</ul>
     </div>
   );

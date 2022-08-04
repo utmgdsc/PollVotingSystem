@@ -132,7 +132,6 @@ export const CreatePoll = () => {
             {requiredFieldError}
             {createPollStatus}
           </div>
-          <div className={"text-center"}></div>
         </div>
         <Button value={"Create Poll"} onClick={() => createPollHandler()} />
       </div>
