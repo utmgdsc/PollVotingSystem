@@ -1,8 +1,7 @@
-import { PollModel, StudentModel } from "../db/mogoose";
+import { StudentModel } from "../db/mogoose";
 import { io } from "../socket";
 import { Socket } from "socket.io";
 import { client } from "../redis";
-import { ObjectId } from "../db/schema";
 
 async function join(socket: Socket, pollCode: string) {
   try {
@@ -33,19 +32,6 @@ async function join(socket: Socket, pollCode: string) {
 
 async function pollResult(pollId: string, sequence: number) {
   try {
-    // const result = await PollModel.aggregate([
-    //   { $match: { _id: new ObjectId(pollId) } },
-    //   { $unwind: "$students" },
-    //   { $match: { "students.sequence": seq } },
-    //   { $sort: { "students.timestamp": 1 } },
-    //   {
-    //     $group: {
-    //       _id: "$students.utorid",
-    //       answer: { $last: "$students.answer" },
-    //     },
-    //   },
-    //   { $group: { _id: "$answer", count: { $sum: 1 } } },
-    // ]);
     const result = await StudentModel.aggregate([
       { $match: { pollId, sequence } },
       { $group: { _id: "$answer", count: { $sum: 1 } } },
@@ -74,25 +60,6 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     if (answer === undefined || answer === null)
       throw { code: 2, message: "Invalid answer" };
 
-    // const result = await PollModel.updateOne(
-    //   {
-    //     _id: pollId,
-    //     students: {
-    //       $elemMatch: {
-    //         utorid: utorid,
-    //         sequence: parseInt(currSequence),
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $set: {
-    //       "students.$.answer": answer,
-    //       "students.$.timestamp": new Date(),
-    //     },
-    //   }
-    // );
-
-    //if (result.modifiedCount == 0)
     await StudentModel.updateOne(
       {
         pollId,
@@ -109,6 +76,7 @@ async function vote(socket: Socket, answer: number, utorid: string) {
     pollResult(pollId, parseInt(currSequence)).then((data) => {
       io.to(pollId).emit("result", data);
     });
+    io.to(socket.id).emit("ack", answer);
     return;
   } catch (err) {
     console.log(err);
