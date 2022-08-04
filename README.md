@@ -45,7 +45,7 @@ Note: The app installation assumes you already have Shibboleth installed on the 
 1. Setting up the client `.env` file (Placed in the root of your `client` folder)
 
 ```
-REACT_APP_BACKEND_URL="http://voteapi:5000"
+REACT_APP_BACKEND_URL="https://poll.utm.utoronto.ca"
 ```
 
 2. Setting up the server `.env` file (Placed in the root of your `server` folder)
@@ -53,7 +53,7 @@ REACT_APP_BACKEND_URL="http://voteapi:5000"
 ```
 PORT=3001
 MONGODB_URL="mongodb://mongodb:27017/quiz"
-FRONTEND_URL="http://frontend:5000"
+FRONTEND_URL="https://poll.utm.utoronto.ca"
 REDIS_URL="redis://default:password@redis:6379"
 WHITELIST=../whitelist
 ```
