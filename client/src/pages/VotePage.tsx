@@ -45,9 +45,6 @@ export const VotePage = () => {
     }
 
     const errorHandler = (e: any) => {
-      // console.error("error");
-      // console.error(e.code);
-      // console.error(e.message);
       setErrorCode(e.code);
     };
 
@@ -74,18 +71,21 @@ export const VotePage = () => {
     };
     socket.on("end", pollClosedHandler);
 
+    const voteAckHandler = (data: any) => {
+      setSelectionOption(String.fromCharCode(data + 64));
+    };
+    socket.on("ack", voteAckHandler);
+
     return () => {
       socket.off("error", errorHandler);
       socket.off("pollStarted", pollStartedHandler);
       socket.off("end", pollClosedHandler);
+      socket.off("ack", voteAckHandler);
     };
   }, [errorCode, started, selectedOption]);
 
   const pollButtonHandler = (selectedOption: string) => {
-    // console.log("Selected:", selectedOption);
-    // console.log((selectedOption.charCodeAt(0) % 65) + 1);
     socket.emit("vote", (selectedOption.charCodeAt(0) % 65) + 1);
-    setSelectionOption(selectedOption);
   };
 
   const optionButtons = () => {
