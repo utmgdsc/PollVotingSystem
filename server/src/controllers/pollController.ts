@@ -32,6 +32,7 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
   let newSequence;
   // on every new start increment the sequence counter
   if (hasStarted) {
+    console.log("AAAAAA")
     if (currSequence == null) newSequence = 0;
     else newSequence = parseInt(currSequence);
     if (newSequence < 0) newSequence *= -1;
@@ -40,6 +41,8 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
     await client.set(pollId, newSequence.toString(), {
       EX: expiry,
     });
+    const result = await pollResult(pollId, newSequence);
+    io.to(pollId).emit("result", result)
   }
   // for every stop make the current counter negative to indicate that it is not an active sequence
   else {
@@ -48,10 +51,11 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
       await client.set(pollId, newSequence.toString(), {
         EX: expiry,
       });
-      console.log("newSequence", newSequence);
     }
   }
+
   io.to(pollId).emit("pollStarted", hasStarted);
+
   return { status: 200, data: { message: "poll status successfully changed" } };
 }
 

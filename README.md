@@ -60,7 +60,7 @@ WHITELIST=../whitelist
 
 3. Add instructor Utorid's to your whitelist file. It should be placed at the root of the `server` folder.
 
-> Your whitelist file should look like the following...
+> Your whitelist file should be named "whitelist" and should look like the following...
 
 ```
 utorid1
@@ -131,7 +131,7 @@ yarn run start
 
 1. Add instructor Utorid's to your whitelist file. It should be placed at the root of the `server` folder.
 
-> Your whitelist file should look like the following...
+> Your whitelist file should be named "whitelist" and should look like the following...
 
 ```
 utorid1
