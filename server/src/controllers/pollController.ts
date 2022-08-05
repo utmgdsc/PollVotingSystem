@@ -41,7 +41,7 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
       EX: expiry,
     });
     const result = await pollResult(pollId, newSequence);
-    io.to(pollId).emit("result", result)
+    io.to(pollId).emit("result", result);
   }
   // for every stop make the current counter negative to indicate that it is not an active sequence
   else {
@@ -63,29 +63,36 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
     const pollDoc = await PollModel.find({ courseCode });
     let promises: Promise<any>[] = [];
     let responses: any[] = [];
-    console.log(62, pollDoc);
     pollDoc.forEach((element) => {
-      console.log(67, element._id);
       promises.push(
-        StudentModel.find(
+        StudentModel.aggregate([
           {
-            pollId: element._id.toString(),
-            timestamp: { $gte: startTime, $lte: endTime },
+            $match: {
+              pollId: element._id.toString(),
+              timestamp: { $gte: startTime, $lte: endTime },
+            },
           },
           {
-            _id: 0,
-            pollId: 1,
-            courseCode,
-            sequence: 1,
-            utorid: 1,
-            timestamp: 1,
-            pollName: element.name,
-            description: element.description,
-            answer: 1,
-          }
-        ).then((data) => {
+            $project: {
+              _id: 0,
+              pollId: 1,
+              courseCode,
+              sequence: 1,
+              utorid: 1,
+              timestamp: {
+                $dateToString: {
+                  date: "$timestamp",
+                  timezone: "America/Toronto",
+                  format: "%d/%m/%Y, %H:%M",
+                },
+              },
+              pollName: element.name,
+              description: element.description,
+              answer: 1,
+            },
+          },
+        ]).then((data) => {
           data.forEach((val) => {
-            console.log(75, val);
             responses.push(val);
           });
         })
