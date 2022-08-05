@@ -34,8 +34,19 @@ async function pollResult(pollId: string, sequence: number) {
   try {
     const result = await StudentModel.aggregate([
       { $match: { pollId, sequence } },
-      { $group: { _id: "$answer", count: { $sum: 1 } } },
-    ]);
+      {
+        $facet: {
+          result: [{ $group: { _id: "$answer", count: { $sum: 1 } } }],
+          totalVotes: [{ $count: "totalVotes" }],
+        },
+      },
+    ]).then((data: any): any => {
+      return {
+        result: data[0].result,
+        totalVotes:
+          data[0].totalVotes.length > 0 ? data[0].totalVotes[0].totalVotes : 0,
+      };
+    });
     console.log(result);
     return result;
   } catch (err) {

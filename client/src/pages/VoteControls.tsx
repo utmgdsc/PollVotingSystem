@@ -76,10 +76,10 @@ export const VoteControls = () => {
     }
     socket.emit("join", pollCode);
 
-    const resultHandler = (e: Result[]) => {
+    const resultHandler = (e: { result: Result[]; totalVotes: number }) => {
       const newVoteData = [0, 0, 0, 0, 0];
-      for (let i = 0; i < e.length; i++) {
-        newVoteData[e[i]._id - 1] = e[i].count;
+      for (let i = 0; i < e.result.length; i++) {
+        newVoteData[e.result[i]._id - 1] = e.result[i].count;
       }
       setVoteData(newVoteData);
     };
