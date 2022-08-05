@@ -13,7 +13,7 @@
 <p align="center">
   <a href="#installation">Installation</a> •
   <a href="#running-the-app-on-a-server">Running the App (Server)</a> •
-  <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a>
+  <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a> •
   <a href="#updating-the-app">Updating the App</a>
 </p>
 
