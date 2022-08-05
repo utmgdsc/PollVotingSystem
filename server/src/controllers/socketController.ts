@@ -34,10 +34,27 @@ async function pollResult(pollId: string, sequence: number) {
   try {
     const result = await StudentModel.aggregate([
       { $match: { pollId, sequence } },
-      { $group: { _id: "$answer", count: { $sum: 1 } } },
+      {
+        $facet: {
+          result: [{ $group: { _id: "$answer", count: { $sum: 1 } } }],
+          totalVotes: [{ $count: "totalVotes" }],
+        },
+      },
     ]);
-    console.log(result);
-    return result;
+    console.log({
+      result: result[0].result,
+      totalVotes:
+        result[0].totalVotes.length > 0
+          ? result[0].totalVotes[0].totalVotes
+          : 0,
+    });
+    return {
+      result: result[0].result,
+      totalVotes:
+        result[0].totalVotes.length > 0
+          ? result[0].totalVotes[0].totalVotes
+          : 0,
+    };
   } catch (err) {
     console.log(err);
   }
