@@ -1,5 +1,9 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import { socket } from "../socket";
+import { pollIdCookie, voteControlsPath } from "../constants/constants";
+import { instance } from "../axios";
+import Cookies from "universal-cookie";
 
 interface NavbarProps {
   options: Array<Option>;
@@ -11,6 +15,28 @@ export interface Option {
 }
 
 export const Navbar = ({ options }: NavbarProps) => {
+  const cookies = new Cookies();
+  const location = useLocation();
+  const pollId = cookies.get(pollIdCookie);
+  const [totalVotes, setTotalVotes] = useState(0);
+
+  const resultHandler = (res: any) => {
+    setTotalVotes(res.totalVotes);
+  };
+
+  socket.on("result", resultHandler);
+
+  useEffect(() => {
+    const fetchPollResults = async () => {
+      if (pollId !== undefined) {
+        await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
+          setTotalVotes(res.data.totalVotes);
+        });
+      }
+    };
+    fetchPollResults();
+  }, []);
+
   const history = useHistory();
   const optionLinks = options.map((option, idx) => {
     return (
@@ -35,6 +61,12 @@ export const Navbar = ({ options }: NavbarProps) => {
       <a className={"pl-3"} href={"/"}>
         MCS PollVoting
       </a>
+      {location.pathname === voteControlsPath ? (
+        <div className={"pl-5"}>Votes: {totalVotes}</div>
+      ) : (
+        <></>
+      )}
+
       <ul className={"flex ml-auto"}>{optionLinks}</ul>
     </div>
   );
