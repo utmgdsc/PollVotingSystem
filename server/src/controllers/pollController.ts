@@ -82,8 +82,7 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
               timestamp: {
                 $dateToString: {
                   date: "$timestamp",
-                  timezone: "America/Toronto",
-                  format: "%d/%m/%Y, %H:%M",
+                  timezone: "America/Toronto"
                 },
               },
               pollName: element.name,
