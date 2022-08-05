@@ -40,21 +40,15 @@ async function pollResult(pollId: string, sequence: number) {
           totalVotes: [{ $count: "totalVotes" }],
         },
       },
-    ]);
-    console.log({
-      result: result[0].result,
-      totalVotes:
-        result[0].totalVotes.length > 0
-          ? result[0].totalVotes[0].totalVotes
-          : 0,
+    ]).then((data: any): any => {
+      return {
+        result: data[0].result,
+        totalVotes:
+          data[0].totalVotes.length > 0 ? data[0].totalVotes[0].totalVotes : 0,
+      };
     });
-    return {
-      result: result[0].result,
-      totalVotes:
-        result[0].totalVotes.length > 0
-          ? result[0].totalVotes[0].totalVotes
-          : 0,
-    };
+    console.log(result);
+    return result;
   } catch (err) {
     console.log(err);
   }
