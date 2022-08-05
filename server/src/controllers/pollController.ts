@@ -115,7 +115,7 @@ async function getResult(pollId: any) {
     return { status: 400, data: { message: "Invalid poll Id" } };
   const currSequence = await client.get(pollId);
   const result = await pollResult(pollId, parseInt(currSequence));
-  return { status: 200, data: { result } };
+  return { status: 200, data: { ...result } };
 }
 
 async function endForever(pollCode: string) {
