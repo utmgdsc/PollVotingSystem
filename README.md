@@ -14,6 +14,7 @@
   <a href="#installation">Installation</a> •
   <a href="#running-the-app-on-a-server">Running the App (Server)</a> •
   <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a>
+  <a href="#updating-the-app">Updating the App</a>
 </p>
 
 ### Installation
@@ -72,7 +73,7 @@ utorid3
 4. Running the entire app
 
 ```
-docker-compose -up --build -d
+docker-compose up --build -d
 ```
 
 ### Running the app (Locally/Debugging Purposes)
@@ -157,3 +158,28 @@ yarn run start
 ```
 
 The client and server will be listening and serving on port `3000` and `3001` respectively.
+
+### Updating the App
+
+> If there's a new version of the app available, then do the following...
+
+1. Pull the latest version of the app from Github (Make sure you're on the `main` branch)
+
+```
+git pull
+```
+
+2. Stop the app
+
+> Stopping the app won't purge any data. The data will persist and only the client and server will rebuild when re-launching
+
+```
+docker-compose down
+```
+
+3. Re-Launch the app
+
+```
+docker-compose up --build -d
+```
+
