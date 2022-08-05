@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { socket } from "../socket";
-import { voteControlsPath } from "../constants/constants";
+import { pollIdCookie, voteControlsPath } from "../constants/constants";
+import { instance } from "../axios";
+import Cookies from "universal-cookie";
 
 interface NavbarProps {
   options: Array<Option>;
@@ -13,12 +15,27 @@ export interface Option {
 }
 
 export const Navbar = ({ options }: NavbarProps) => {
+  const cookies = new Cookies();
   const location = useLocation();
+  const pollId = cookies.get(pollIdCookie);
   const [totalVotes, setTotalVotes] = useState(0);
-  const resultHandler = (res: []) => {
-    setTotalVotes(res.length);
+
+  const resultHandler = (res: any) => {
+    setTotalVotes(res.totalVotes);
   };
+
   socket.on("result", resultHandler);
+
+  useEffect(() => {
+    const fetchPollResults = async () => {
+      if (pollId !== undefined) {
+        await instance.get(`/poll/result?pollId=${pollId}`).then((res) => {
+          setTotalVotes(res.data.totalVotes);
+        });
+      }
+    };
+    fetchPollResults();
+  }, []);
 
   const history = useHistory();
   const optionLinks = options.map((option, idx) => {
