@@ -23,14 +23,16 @@ export const Navbar = ({ options }: NavbarProps) => {
   const location = useLocation();
   const pollId = cookies.get(pollIdCookie);
   const [totalVotes, setTotalVotes] = useState(0);
-  document.title = mcsPollVoting;
+
+  if (location.pathname === voteControlsPath) {
+    document.title = `Votes: ${totalVotes}`;
+  } else {
+    document.title = mcsPollVoting;
+  }
 
   const resultHandler = (res: any) => {
     const currentVotes = res.totalVotes;
     setTotalVotes(currentVotes);
-    if (location.pathname === voteControlsPath) {
-      document.title = `Votes: ${currentVotes}`;
-    }
   };
 
   socket.on("result", resultHandler);
