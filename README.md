@@ -6,7 +6,7 @@
   <h4 align="center">MCS Project with Prof. Zingaro and Ilir
 </h4>
   <p align="center" width="100%">
-    <a href="https://poll.utm.utoronto.ca/">poll.utm.utoronto.ca/</a>
+    <a href="https://poll.utm.utoronto.ca/">poll.utm.utoronto.ca</a>
   </p>
 </h1>
 
