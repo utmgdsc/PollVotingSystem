@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { socket } from "../socket";
-import { pollIdCookie, voteControlsPath } from "../constants/constants";
+import {
+  mcsPollVoting,
+  pollIdCookie,
+  voteControlsPath,
+} from "../constants/constants";
 import { instance } from "../axios";
 import Cookies from "universal-cookie";
 
@@ -19,9 +23,14 @@ export const Navbar = ({ options }: NavbarProps) => {
   const location = useLocation();
   const pollId = cookies.get(pollIdCookie);
   const [totalVotes, setTotalVotes] = useState(0);
+  document.title = mcsPollVoting;
 
   const resultHandler = (res: any) => {
-    setTotalVotes(res.totalVotes);
+    const currentVotes = res.totalVotes;
+    setTotalVotes(currentVotes);
+    if (location.pathname === voteControlsPath) {
+      document.title = `Votes: ${currentVotes}`;
+    }
   };
 
   socket.on("result", resultHandler);
