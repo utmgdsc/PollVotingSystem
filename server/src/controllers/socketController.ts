@@ -75,6 +75,7 @@ async function vote(socket: Socket, answer: number, utorid: string) {
       {
         pollId,
         sequence: parseInt(currSequence),
+        utorid
       },
       {
         utorid,
