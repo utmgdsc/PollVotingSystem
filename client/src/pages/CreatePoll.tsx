@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormInput } from "../components/FormInput";
 import { Button } from "../components/Button";
 import { Header } from "../components/Header";
@@ -31,9 +31,26 @@ export const CreatePoll = () => {
   const [pollConfig, updatePollConfig] = useState(initialState);
   const [requiredFieldError, setRequiredFieldError] = useState("");
   const [createPollStatus, setCreatePollStatus] = useState("");
-  const [_, setShowModal] = useState(true);
   const pollId = cookies.get(pollIdCookie);
   const pollCode = cookies.get(pollCodeCookie);
+
+  const checkPreviousActivePolls = () => {
+    return pollId !== undefined && pollCode !== undefined;
+  };
+
+  const disconnectAllStudents = () => {
+    instance.patch(`/poll/end/${pollCode}`).catch(() => {
+      // console.error(e);
+    });
+  };
+
+  useEffect(() => {
+    if (checkPreviousActivePolls()) {
+      cookies.remove(pollIdCookie);
+      cookies.remove(pollCodeCookie);
+      disconnectAllStudents();
+    }
+  }, []);
 
   const pollOptions = {
     name: { fields: ["Poll Name", "Name"], required: false },
@@ -91,31 +108,8 @@ export const CreatePoll = () => {
     );
   });
 
-  const checkPreviousActivePolls = () => {
-    return pollId !== undefined && pollCode !== undefined;
-  };
-
-  const disconnectAllStudents = () => {
-    instance.patch(`/poll/end/${pollCode}`).catch(() => {
-      // console.error(e);
-    });
-  };
-
   return (
     <>
-      <Modal
-        showModal={checkPreviousActivePolls()}
-        onClick={() => {
-          cookies.remove(pollIdCookie);
-          cookies.remove(pollCodeCookie);
-          disconnectAllStudents();
-          setShowModal(false);
-        }}
-      >
-        <div className={"text-center mb-10 mx-2"}>
-          Note: Any current active polls will be stopped
-        </div>
-      </Modal>
       <div className={"flex flex-col"}>
         <div className={"mb-14"}>
           <Header text={"Create Poll"} />
