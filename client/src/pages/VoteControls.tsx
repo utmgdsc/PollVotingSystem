@@ -123,6 +123,10 @@ export const VoteControls = () => {
       ) : (
         <div className={"flex flex-col"}>
           <Header text={"Poll Controls"} />
+          <div className={"text-center mb-6 font-semibold"}>
+            Note: If you click on the &quot;Create Poll&quot; button, the
+            current poll will be stopped
+          </div>
           <div className={"text-xl"}>Poll Status: {pollStatus.status}</div>
           <Button
             value={"Start Poll"}
