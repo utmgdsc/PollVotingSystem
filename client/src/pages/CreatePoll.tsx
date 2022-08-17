@@ -31,7 +31,6 @@ export const CreatePoll = () => {
   const [pollConfig, updatePollConfig] = useState(initialState);
   const [requiredFieldError, setRequiredFieldError] = useState("");
   const [createPollStatus, setCreatePollStatus] = useState("");
-  const [_, setShowModal] = useState(true);
   const pollId = cookies.get(pollIdCookie);
   const pollCode = cookies.get(pollCodeCookie);
 
