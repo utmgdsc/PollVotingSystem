@@ -15,6 +15,7 @@ export const VotePage = () => {
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
   const [started, setStarted] = useState(false);
+  const [notifPermission, setNotifPermission] = useState("denied");
 
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
@@ -31,6 +32,11 @@ export const VotePage = () => {
 
   useEffect(() => {
     socket.emit("join", pollCode);
+    try {
+      Notification.requestPermission().then(setNotifPermission);
+    } catch (e) {
+      /* notifications probably not supported */
+    }
     window.addEventListener("blur", onBlur);
     window.addEventListener("focus", onFocus);
     return () => {
@@ -59,6 +65,13 @@ export const VotePage = () => {
         setSelectionOption("");
         if (!isFocus) {
           document.title = questionStarted;
+          if (notifPermission === "granted") {
+            /* send notification */
+            const notification = new Notification("New Question Started!", {
+              icon: "/favicon.ico",
+              tag: "new-question",
+            });
+          }
         }
       }
     };
@@ -82,7 +95,7 @@ export const VotePage = () => {
       socket.off("end", pollClosedHandler);
       socket.off("ack", voteAckHandler);
     };
-  }, [errorCode, started, selectedOption]);
+  }, [errorCode, started, selectedOption, notifPermission]);
 
   const pollButtonHandler = (selectedOption: string) => {
     socket.emit("vote", (selectedOption.charCodeAt(0) % 65) + 1);
