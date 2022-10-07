@@ -110,7 +110,11 @@ export const VotePage = () => {
   ) : (
     <div className={"flex flex-col items-center px-5"}>
       <Header text={`Poll Code: ${pollCode}`} />
-      <Header text={`Selected Option: ${selectedOption}`} />
+      <Header
+        text={`Selected Option: ${
+          selectedOption.length > 0 ? selectedOption : "None"
+        }`}
+      />
       <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
     </div>
   );
