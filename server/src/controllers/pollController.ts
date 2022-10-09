@@ -58,14 +58,25 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
   return { status: 200, data: { message: "poll status successfully changed" } };
 }
 
+type AggregatedStudent = {
+  pollId: string,
+  courseCode: string,
+  sequence: number,
+  utorid: string,
+  timestamp: string,
+  pollName: string,
+  description: string,
+  answer: number
+}
+
 async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
   try {
     const pollDoc = await PollModel.find({ courseCode });
-    let promises: Promise<any>[] = [];
-    let responses: any[] = [];
+    let promises: Promise<AggregatedStudent|void>[] = [];
+    let responses: AggregatedStudent[] = [];
     pollDoc.forEach((element) => {
       promises.push(
-        StudentModel.aggregate([
+        StudentModel.aggregate<AggregatedStudent>([
           {
             $match: {
               pollId: element._id.toString(),
@@ -108,16 +119,16 @@ async function getStudents(courseCode: string, startTime: Date, endTime: Date) {
   }
 }
 
-async function getPollStatus(pollId: any) {
-  if (pollId === null || pollId === undefined || typeof pollId !== "string")
+async function getPollStatus(pollId: string | undefined) {
+  if (!pollId)
     return { status: 400, data: { message: "Invalid poll Id" } };
   const result = await client.get(pollId);
   const pollStarted = result === null ? false : parseInt(result) > 0;
   return { status: 200, data: { pollStarted } };
 }
 
-async function getResult(pollId: any) {
-  if (pollId === null || pollId === undefined || typeof pollId !== "string")
+async function getResult(pollId: string | undefined) {
+  if (!pollId)
     return { status: 400, data: { message: "Invalid poll Id" } };
   const currSequence = await client.get(pollId);
   const result = await pollResult(pollId, parseInt(currSequence));

@@ -5,7 +5,7 @@ const userRouter = Router();
 
 userRouter.get("/", async (req, res) => {
   try {
-    const result = await getUser(req.headers.utorid);
+    const result = await getUser(req.headers.utorid as string | undefined);
     return res.status(result.status).send(result.data);
   } catch (err) {
     console.log(err);

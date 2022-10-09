@@ -62,7 +62,7 @@ pollRouter.get("/students", async (req, res) => {
 pollRouter.get("/status", async (req, res) => {
   const { pollId } = req.query;
   try {
-    const result = await getPollStatus(pollId);
+    const result = await getPollStatus(pollId as string | undefined);
     return res.status(result.status).send(result.data);
   } catch (err) {
     return res.status(500).send({ message: "Internal Server Error" });
@@ -72,7 +72,7 @@ pollRouter.get("/status", async (req, res) => {
 pollRouter.get("/result", async (req, res) => {
   const { pollId } = req.query;
   try {
-    const result = await getResult(pollId);
+    const result = await getResult(pollId as string | undefined);
     return res.status(result.status).send(result.data);
   } catch (err) {
     return res.status(500).send({ message: "Internal Server Error" });
