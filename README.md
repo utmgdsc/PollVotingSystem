@@ -13,6 +13,7 @@
 <p align="center">
   <a href="#installation">Installation</a> •
   <a href="#project-structure">Project Structure</a> •
+  <a href="#architecture">Architecture</a> •
   <a href="#running-the-app-on-a-server">Running the App (Server)</a> •
   <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a> •
   <a href="#updating-the-app">Updating the App</a>
@@ -88,6 +89,16 @@ Note: Only the core files & directories are listed below
 ├── nginx.conf                      # Configuration for nginx proxy 
 └── docker-compose.yml              # Running the entire application (Redis, Client, Server, DB, Proxy)
 ```
+
+### Architecture
+![image](https://user-images.githubusercontent.com/24628243/194737416-5d48b842-5022-4010-aa9b-4f13378531d3.png)
+
+General Flow:
+1. Students/Professors sign in through Shibboleth
+2. If a professor's utorid is found in Redis, then they'll be redirected to the professor page
+3. Voting is done through Socket.io (Pass through the nginx proxy)
+5. All other methods of communication are through the Axios HTTP client (i.e. Fetching previous poll data) (Pass through the nginx proxy)
+4. All poll and student data is stored on MongoDB
 
 ### Running the app (on a server)
 Note: The app installation assumes you already have Shibboleth installed on the server.
