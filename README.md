@@ -91,6 +91,7 @@ Note: Only the core files & directories are listed below
 ```
 
 ### Architecture
+Note: The client, proxy, server, database and cache are all running in separate containers
 ![image](https://user-images.githubusercontent.com/24628243/194737416-5d48b842-5022-4010-aa9b-4f13378531d3.png)
 
 General Flow:
