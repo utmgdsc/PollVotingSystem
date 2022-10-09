@@ -12,6 +12,8 @@
 
 <p align="center">
   <a href="#installation">Installation</a> •
+  <a href="#project-structure">Project Structure</a> •
+  <a href="#architecture">Architecture</a> •
   <a href="#running-the-app-on-a-server">Running the App (Server)</a> •
   <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a> •
   <a href="#updating-the-app">Updating the App</a>
@@ -39,6 +41,65 @@ yarn install
 cd server
 yarn install
 ```
+
+### Project Structure
+Note: Only the core files & directories are listed below
+
+```
+├── server
+|   |── controllers
+|   |   |── pollController.ts
+|   |   |── socketController.ts
+|   |   └── userController.ts
+|   |── db
+|   |   |── mongoose.ts
+|   |   └── schema.ts               # Contains all database related schemas to store poll & student data
+|   |── routes
+|   |   |── pollRoute.ts
+|   |   └── userRoutes.ts
+|   |── redis.ts                    # Redis related configurations to setup the professor list
+|   |── server.ts
+|   └── socket.ts
+├── client
+│   ├── public                      # All public facing assets/files
+│   │   ├── index.html
+│   │   ├── newQuestions.wav
+│   │   ├── favicon.ico
+│   ├── components
+│   │   ├── Button
+│   │   ├── Chart
+│   │   ├── FormInput
+│   │   ├── Header
+│   │   ├── Modal
+│   │   ├── Navbar
+│   │   ├── PollCode
+│   │   ├── PollCodeSegment         # Subcomponent of PollCode
+│   │   └── PollOptionButton
+│   ├── pages
+│   │   ├── CreatePoll
+│   │   ├── JoinPoll
+│   │   ├── PastPolls              
+│   │   ├── ProfHome              
+│   │   ├── VoteControls              
+│   │   ├── VotePage              
+│   ├── socket.ts                   
+│   ├── axios.ts                    
+│   └── App.tsx                     # Starting point of the client
+├── README.md                       # You are here! 
+├── nginx.conf                      # Configuration for nginx proxy 
+└── docker-compose.yml              # Running the entire application (Redis, Client, Server, DB, Proxy)
+```
+
+### Architecture
+Note: The client, proxy, server, database and cache are all running in separate containers
+![image](https://user-images.githubusercontent.com/24628243/194745181-b1c903e2-059a-484a-9d29-6068695975a0.png)
+
+General Flow:
+1. Students/Professors sign in through Shibboleth
+2. If a professor's utorid is found in Redis, then they'll be redirected to the professor page
+3. Voting is done through Socket.io (Pass through the nginx proxy)
+5. All other methods of communication are through the Axios HTTP client (i.e. Fetching previous poll data) (Pass through the nginx proxy)
+4. All poll and student data is stored on MongoDB
 
 ### Running the app (on a server)
 Note: The app installation assumes you already have Shibboleth installed on the server.
