@@ -92,7 +92,7 @@ Note: Only the core files & directories are listed below
 
 ### Architecture
 Note: The client, proxy, server, database and cache are all running in separate containers
-![image](https://user-images.githubusercontent.com/24628243/194745096-31936d23-59c5-45bc-9e46-d5f3578c4475.png)
+![image](https://user-images.githubusercontent.com/24628243/194745181-b1c903e2-059a-484a-9d29-6068695975a0.png)
 
 General Flow:
 1. Students/Professors sign in through Shibboleth
