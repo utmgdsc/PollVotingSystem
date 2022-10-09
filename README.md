@@ -85,7 +85,7 @@ Note: Only the core files & directories are listed below
 │   ├── axios.ts                    
 │   └── App.tsx                     # Starting point of the client
 ├── README.md                       # You are here! 
-├── nginx.confg                     # Configuration for nginx proxy 
+├── nginx.conf                      # Configuration for nginx proxy 
 └── docker-compose.yml              # Running the entire application (Redis, Client, Server, DB, Proxy)
 ```
 
