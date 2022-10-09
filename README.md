@@ -12,6 +12,7 @@
 
 <p align="center">
   <a href="#installation">Installation</a> •
+  <a href="#project-structure">Project Structure</a> •
   <a href="#running-the-app-on-a-server">Running the App (Server)</a> •
   <a href="#running-the-app-locallydebugging-purposes">Running the App (Locally)</a> •
   <a href="#updating-the-app">Updating the App</a>
@@ -38,6 +39,54 @@ yarn install
 ```
 cd server
 yarn install
+```
+
+### Project Structure
+Note: Only the core files & directories are listed below
+
+```
+├── server
+|   |── controllers
+|   |   |── pollController.ts
+|   |   |── socketController.ts
+|   |   └── userController.ts
+|   |── db
+|   |   |── mongoose.ts
+|   |   └── schema.ts               # Contains all database related schemas to store poll & student data
+|   |── routes
+|   |   |── pollRoute.ts
+|   |   └── userRoutes.ts
+|   |── redis.ts                    # Redis related configurations to setup the professor list
+|   |── server.ts
+|   └── socket.ts
+├── client
+│   ├── public                      # All public facing assets/files
+│   │   ├── index.html
+│   │   ├── newQuestions.wav
+│   │   ├── favicon.ico
+│   ├── components
+│   │   ├── Button
+│   │   ├── Chart
+│   │   ├── FormInput
+│   │   ├── Header
+│   │   ├── Modal
+│   │   ├── Navbar
+│   │   ├── PollCode
+│   │   ├── PollCodeSegment         # Subcomponent of PollCode
+│   │   └── PollOptionButton
+│   ├── pages
+│   │   ├── CreatePoll
+│   │   ├── JoinPoll
+│   │   ├── PastPolls              
+│   │   ├── ProfHome              
+│   │   ├── VoteControls              
+│   │   ├── VotePage              
+│   ├── socket.ts                   
+│   ├── axios.ts                    
+│   └── App.tsx                     # Starting point of the client
+├── README.md                       # You are here! 
+├── nginx.confg                     # Configuration for nginx proxy 
+└── docker-compose.yml              # Running the entire application (Redis, Client, Server, DB, Proxy)
 ```
 
 ### Running the app (on a server)
