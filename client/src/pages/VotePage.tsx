@@ -9,12 +9,20 @@ import {
   questionStarted,
 } from "../constants/constants";
 import { socket } from "../socket";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export const VotePage = () => {
   const history = useHistory();
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
-  const [started, setStarted] = useState(false);
+  // const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(true);
+
+  const [loading, setLoading] = useState(false);
+  const [timeOutError, setTimeOutError] = useState(false);
+  const [timeOutCode, setTimeOutCode] = useState(0);
 
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
@@ -73,6 +81,9 @@ export const VotePage = () => {
 
     const voteAckHandler = (data: any) => {
       setSelectionOption(String.fromCharCode(data + 64));
+      clearTimeout(timeOutCode);
+      setTimeOutError(false);
+      setLoading(false);
     };
     socket.on("ack", voteAckHandler);
 
@@ -85,9 +96,25 @@ export const VotePage = () => {
   }, [errorCode, started, selectedOption]);
 
   const pollButtonHandler = (selectedOption: string) => {
+    setLoading(true);
+    setTimeOutCode(
+      setTimeout(() => {
+        setTimeOutError(true);
+        setLoading(false);
+      }, 10000) as unknown as number
+    );
     socket.emit("vote", (selectedOption.charCodeAt(0) % 65) + 1);
   };
 
+  const handleErrorClose = (
+    e: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setTimeOutError(false);
+  };
   const optionButtons = () => {
     const pollOptionButtons = [];
     for (let i = 65; i < 70; i++) {
@@ -111,7 +138,39 @@ export const VotePage = () => {
     <div className={"flex flex-col items-center px-5"}>
       <Header text={`Poll Code: ${pollCode}`} />
       <Header text={`Selected Option: ${selectedOption}`} />
-      <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
+      <div className={"relative"}>
+        <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
+        {loading ? (
+          <div className={"z-50 top-0 left-0 block w-full h-full absolute "}>
+            <div
+              className={
+                "flex items-center w-full bg- h-full flex-col justify-center align-middle"
+              }
+              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+            >
+              <CircularProgress
+                size={70}
+                sx={{
+                  color: "white",
+                }}
+              />
+            </div>
+          </div>
+        ) : null}
+      </div>
+      <Snackbar
+        open={timeOutError}
+        onClose={handleErrorClose}
+        autoHideDuration={6000}
+      >
+        <Alert
+          severity="error"
+          onClose={handleErrorClose}
+          sx={{ width: "100%" }}
+        >
+          Vote not received, please try again!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
