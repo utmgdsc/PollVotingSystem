@@ -84,5 +84,4 @@ As a rule of thumb, we strongly recommend you *Accept Incoming Change*. If you l
 In case you have any questions or concerns, or you want us to review your issue/PR, please contact:
 
 - Project Owner: [Shubh Bapna](https://github.com/shubhbapna) and [Chris Lim](https://github.com/hiimchrislim) (for project’s inquiries)
-- GDSC Open-source Initiative Lead: [Giang Bui](https://github.com/huonggiangbui) (for project’s inquiries and GDSC Open-source Initiative general inquiries)
-- GDSC Open-source Initiative Lead: [Joy Malhotra](https://github.com/joymalhotra) (for project’s inquiries and GDSC Open-source Initiative general inquiries)
+- GDSC Open-source Initiative Leads: [Giang Bui](https://github.com/huonggiangbui) and  [Joy Malhotra](https://github.com/joymalhotra) (for project’s inquiries and GDSC Open-source Initiative general inquiries)
