@@ -4,6 +4,7 @@ import { io } from "../socket";
 import { client } from "../redis";
 import { customAlphabet } from "nanoid/async";
 import { pollResult } from "./socketController";
+import {AggregatedStudent} from "../types/pollController.types";
 const nanoid = customAlphabet("qwertyuiopasdfghjklzxcvbnm1234567890", 6);
 
 // set poll code expiry to 1 day
@@ -56,17 +57,6 @@ async function changePollStatus(pollId: string, hasStarted: boolean) {
   io.to(pollId).emit("pollStarted", hasStarted);
 
   return { status: 200, data: { message: "poll status successfully changed" } };
-}
-
-type AggregatedStudent = {
-  pollId: string,
-  courseCode: string,
-  sequence: number,
-  utorid: string,
-  timestamp: string,
-  pollName: string,
-  description: string,
-  answer: number
 }
 
 async function getStudents(courseCode: string, startTime: Date, endTime: Date) {

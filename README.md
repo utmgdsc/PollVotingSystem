@@ -57,6 +57,8 @@ Note: Only the core files & directories are listed below
 |   |── routes
 |   |   |── pollRoute.ts
 |   |   └── userRoutes.ts
+|   |── types
+|   |   └── pollController.types.ts
 |   |── redis.ts                    # Redis related configurations to setup the professor list
 |   |── server.ts
 |   └── socket.ts
