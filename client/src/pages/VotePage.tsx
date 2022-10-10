@@ -17,8 +17,7 @@ export const VotePage = () => {
   const history = useHistory();
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
-  // const [started, setStarted] = useState(false);
-  const [started, setStarted] = useState(true);
+  const [started, setStarted] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [timeOutError, setTimeOutError] = useState(false);
