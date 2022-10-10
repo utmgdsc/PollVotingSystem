@@ -1,8 +1,8 @@
-<!-- This template is a simple version of Zulip PR template: https://github.com/zulip/zulip/ -->
+This template is a simple version of Zulip PR template: https://github.com/zulip/zulip/
 
 <!-- Describe your pull request here.-->
 
-Fixes: <!-- Issue link, or clear description.-->
+Fixes: #<!-- Issue number -->
 
 <!-- If the PR makes UI changes, always include one or more still screenshots to demonstrate your changes. If it seems helpful, add a screen capture of the new functionality as well.
 
