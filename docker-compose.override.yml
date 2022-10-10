@@ -1,0 +1,7 @@
+services:
+  frontend:
+    env_file:
+      - ./client/.env
+  voteapi:
+    env_file:
+      - ./server/.env

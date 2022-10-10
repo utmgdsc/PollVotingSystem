@@ -1,0 +1,36 @@
+
+services:
+  frontend:
+    volumes:
+      - ./client:/frontend
+      - /frontend/node_modules
+      - ./devproxy/env.client:/frontend/.env
+    build:
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./devproxy/env.client
+  voteapi:
+    volumes:
+      - ./server:/api
+      - /api/node_modules
+      - ./devproxy/env.server:/api/.env
+      - ./devproxy/whitelist:/api/whitelist
+    build:
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./devproxy/env.server
+  devproxy:
+    container_name: devproxy
+    build:
+      context: ./devproxy
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    networks:
+      backend:
+        aliases:
+          - devproxy
+    depends_on:
+      - frontend
+      - voteapi
