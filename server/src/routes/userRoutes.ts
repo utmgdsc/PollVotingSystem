@@ -5,7 +5,10 @@ const userRouter = Router();
 
 userRouter.get("/", async (req, res) => {
   try {
-    const result = await getUser(req.headers.utorid as string | undefined);
+    if (typeof req.headers.utorid !== "string") {
+      return res.status(400).send({ message: "Invalid utorid" });
+    }
+    const result = await getUser(req.headers.utorid as string);
     return res.status(result.status).send(result.data);
   } catch (err) {
     console.log(err);
