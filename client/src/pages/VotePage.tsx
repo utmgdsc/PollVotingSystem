@@ -9,9 +9,6 @@ import {
   questionStarted,
 } from "../constants/constants";
 import { socket } from "../socket";
-import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import CircularProgress from "@mui/material/CircularProgress";
 
 export const VotePage = () => {
   const history = useHistory();
