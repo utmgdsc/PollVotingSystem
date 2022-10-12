@@ -9,7 +9,8 @@
     "start": "node .",
     "dev": "nodemon --watch src -e ts,ejs --exec yarn run start",
     "build": "tsc --project ./",
-    "lint": "eslint --ext .ts --fix ."
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
   },
   "repository": "git+https://github.com/hiimchrislim/QuizVotingSystem.git",
   "author": "Chris, Akshit, Shubh, Ilir",
