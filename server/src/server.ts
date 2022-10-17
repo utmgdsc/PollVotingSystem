@@ -33,7 +33,7 @@ app.use("/user", userRouter);
 app.use(async (req, res, next) => {
   try {
     if (typeof req.headers.utorid !== "string") {
-      return res.status(400).send({ message: "Invalid utorid" });
+      return next(new Error("Invalid utorid"));
     }
     const userType = await getUser(req.headers.utorid as string);
     if (userType.data.userType === "instructor") next();
