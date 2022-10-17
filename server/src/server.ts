@@ -35,7 +35,7 @@ app.use(async (req, res, next) => {
     if (typeof req.headers.utorid !== "string") {
       return next(new Error("Invalid utorid"));
     }
-    const userType = await getUser(req.headers.utorid as string);
+    const userType = await getUser(req.headers.utorid);
     if (userType.data.userType === "instructor") next();
     else next(new Error("Forbidden User"));
   } catch (err) {

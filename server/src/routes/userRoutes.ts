@@ -8,7 +8,7 @@ userRouter.get("/", async (req, res) => {
     if (typeof req.headers.utorid !== "string") {
       return res.status(400).send({ message: "Invalid utorid" });
     }
-    const result = await getUser(req.headers.utorid as string);
+    const result = await getUser(req.headers.utorid);
     return res.status(result.status).send(result.data);
   } catch (err) {
     console.log(err);
