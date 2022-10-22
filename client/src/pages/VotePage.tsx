@@ -9,6 +9,7 @@ import {
   questionStarted,
 } from "../constants/constants";
 import { socket } from "../socket";
+import { ErrorAlert } from "../components/ErrorAlert";
 
 export const VotePage = () => {
   const history = useHistory();
@@ -17,7 +18,8 @@ export const VotePage = () => {
   const [started, setStarted] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [timeOutCode, setTimeOutCode] = useState(0);
+  const [timeoutCode, setTimeoutCode] = useState(0);
+  const [timeoutError, setTimeoutError] = useState(false);
 
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
@@ -76,7 +78,7 @@ export const VotePage = () => {
 
     const voteAckHandler = (data: any) => {
       setSelectionOption(String.fromCharCode(data + 64));
-      clearTimeout(timeOutCode);
+      clearTimeout(timeoutCode);
       setLoading(false);
     };
     socket.on("ack", voteAckHandler);
@@ -91,7 +93,7 @@ export const VotePage = () => {
 
   const pollButtonHandler = (selectedOption: string) => {
     setLoading(true);
-    setTimeOutCode(
+    setTimeoutCode(
       setTimeout(() => {
         triggerTimeOutError();
         setLoading(false);
@@ -100,7 +102,7 @@ export const VotePage = () => {
     socket.emit("vote", (selectedOption.charCodeAt(0) % 65) + 1);
   };
   const triggerTimeOutError = () => {
-    alert("Vote not received, please try again!");
+    setTimeoutError(true);
   };
   const optionButtons = () => {
     const pollOptionButtons = [];
@@ -158,6 +160,14 @@ export const VotePage = () => {
           </div>
         ) : null}
       </div>
+      <ErrorAlert
+        text={"Your vote was not received, please try again."}
+        title={"Vote not received!"}
+        enabled={timeoutError}
+        onClose={() => {
+          setTimeoutError(false);
+        }}
+      />
     </div>
   );
 };
