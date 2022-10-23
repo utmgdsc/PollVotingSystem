@@ -42,7 +42,7 @@ async function changePollStatus (pollId: string, hasStarted: boolean) {
       EX: expiry
     })
     const result = await pollResult(pollId, newSequence)
-    io.to(pollId).emit('result', result)
+    io.to('instructor-' + pollId).emit('result', result)
   } else {
     // for every stop make the current counter negative to indicate that it is not an active sequence
     if (currSequence != null) {

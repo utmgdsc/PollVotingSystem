@@ -62,4 +62,9 @@ const server = app.listen(port, () => {
       next(new Error('Not Authorized'))
     }
   })
+  io.use(async (socket, next) => {
+    const userType = await getUser(socket.data.utorid)
+    socket.data.userType = userType.data.userType
+    next()
+  })
 })

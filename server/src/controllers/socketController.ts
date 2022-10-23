@@ -21,6 +21,8 @@ async function join (socket: Socket, pollCode: string) {
       currSequence == null ? false : parseInt(currSequence) > 0
     console.log('Has Started', hasStarted)
     socket.join(pollId)
+    // allow targeting specific user types
+    socket.join(socket.data.userType + '-' + pollId)
     socket.data.pollId = pollId
     io.to(socket.id).emit('pollStarted', hasStarted)
   } catch (err) {
@@ -82,7 +84,7 @@ async function vote (socket: Socket, answer: number, utorid: string) {
       { upsert: true }
     )
     pollResult(pollId, parseInt(currSequence)).then((data) => {
-      io.to(pollId).emit('result', data)
+      io.to('instructor-' + pollId).emit('result', data)
     })
     io.to(socket.id).emit('ack', answer)
     return
