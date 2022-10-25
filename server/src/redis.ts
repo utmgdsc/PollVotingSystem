@@ -1,30 +1,30 @@
-import { createClient } from "redis";
-import fs from "fs";
-import path from "path";
-import readline from "readline";
+import { createClient } from 'redis'
+import fs from 'fs'
+import path from 'path'
+import readline from 'readline'
 const client = createClient({
-  url: process.env.REDIS_URL,
+  url: process.env.REDIS_URL
 });
 
 (async () => {
-  client.on("error", (err) => console.log("Redis Client Error", err));
+  client.on('error', (err) => console.log('Redis Client Error', err))
 
-  await client.connect();
-  console.log("connected to redis");
+  await client.connect()
+  console.log('connected to redis')
 
   const readstream = fs.createReadStream(
     path.join(__dirname, process.env.WHITELIST)
-  );
+  )
 
   const rl = readline.createInterface({
     input: readstream,
-    crlfDelay: Infinity,
-  });
+    crlfDelay: Infinity
+  })
 
   for await (const line of rl) {
-    console.log(line.trim());
-    client.set(line.trim(), "instructor");
+    console.log(line.trim())
+    client.set(line.trim(), 'instructor')
   }
-})();
+})()
 
-export { client };
+export { client }

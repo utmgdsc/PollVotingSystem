@@ -1,4 +1,4 @@
-import { client } from "../redis";
+import { client } from '../redis'
 
 async function getUser(utorid: string) {
   if (utorid.trim().length === 0)
@@ -8,4 +8,4 @@ async function getUser(utorid: string) {
   return { status: 200, data: { userType } };
 }
 
-export { getUser };
+export { getUser }

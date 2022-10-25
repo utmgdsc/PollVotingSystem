@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { getUser } from "../controllers/userController";
+import { Router } from 'express'
+import { getUser } from '../controllers/userController'
 
-const userRouter = Router();
+const userRouter = Router()
 
-userRouter.get("/", async (req, res) => {
+userRouter.get('/', async (req, res) => {
   try {
     if (typeof req.headers.utorid !== "string") {
       return res.status(400).send({ message: "Invalid utorid" });
@@ -11,9 +11,9 @@ userRouter.get("/", async (req, res) => {
     const result = await getUser(req.headers.utorid);
     return res.status(result.status).send(result.data);
   } catch (err) {
-    console.log(err);
-    return res.status(500).send({ message: "Internal Server Error" });
+    console.log(err)
+    return res.status(500).send({ message: 'Internal Server Error' })
   }
-});
+})
 
-export default userRouter;
+export default userRouter
