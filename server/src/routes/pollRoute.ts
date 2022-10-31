@@ -62,6 +62,9 @@ pollRouter.get('/students', async (req, res) => {
 pollRouter.get('/status', async (req, res) => {
   const { pollId } = req.query
   try {
+    if (typeof pollId !== 'string') {
+      return res.status(400).send({ message: 'Invalid utorid' })
+    }
     const result = await getPollStatus(pollId)
     return res.status(result.status).send(result.data)
   } catch (err) {
@@ -72,6 +75,9 @@ pollRouter.get('/status', async (req, res) => {
 pollRouter.get('/result', async (req, res) => {
   const { pollId } = req.query
   try {
+    if (typeof pollId !== 'string') {
+      return res.status(400).send({ message: 'Invalid utorid' })
+    }
     const result = await getResult(pollId)
     return res.status(result.status).send(result.data)
   } catch (err) {

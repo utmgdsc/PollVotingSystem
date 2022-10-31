@@ -32,6 +32,9 @@ app.use(cookieParser())
 app.use('/user', userRouter)
 app.use(async (req, res, next) => {
   try {
+    if (typeof req.headers.utorid !== 'string') {
+      return next(new Error('Invalid utorid'))
+    }
     const userType = await getUser(req.headers.utorid)
     if (userType.data.userType === 'instructor') next()
     else next(new Error('Forbidden User'))

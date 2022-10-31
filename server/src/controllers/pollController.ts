@@ -62,11 +62,11 @@ async function getStudents (courseCode: string, startTime: Date, endTime: Date) 
   // eslint-disable-next-line no-useless-catch
   try {
     const pollDoc = await PollModel.find({ courseCode })
-    const promises: Promise<any>[] = []
-    const responses: any[] = []
+    const promises: Promise<AggregatedStudent | void>[] = []
+    const responses: AggregatedStudent[] = []
     pollDoc.forEach((element) => {
       promises.push(
-        StudentModel.aggregate([
+        StudentModel.aggregate<AggregatedStudent>([
           {
             $match: {
               pollId: element._id.toString(),
@@ -109,15 +109,15 @@ async function getStudents (courseCode: string, startTime: Date, endTime: Date) 
   }
 }
 
-async function getPollStatus (pollId: any) {
-  if (pollId === null || pollId === undefined || typeof pollId !== 'string') { return { status: 400, data: { message: 'Invalid poll Id' } } }
+async function getPollStatus (pollId: string) {
+  if (pollId.trim().length === 0) { return { status: 400, data: { message: 'Invalid poll Id' } } }
   const result = await client.get(pollId)
   const pollStarted = result === null ? false : parseInt(result) > 0
   return { status: 200, data: { pollStarted } }
 }
 
-async function getResult (pollId: any) {
-  if (pollId === null || pollId === undefined || typeof pollId !== 'string') { return { status: 400, data: { message: 'Invalid poll Id' } } }
+async function getResult (pollId: string) {
+  if (pollId.trim().length === 0) { return { status: 400, data: { message: 'Invalid poll Id' } } }
   const currSequence = await client.get(pollId)
   const result = await pollResult(pollId, parseInt(currSequence))
   return { status: 200, data: { ...result } }
