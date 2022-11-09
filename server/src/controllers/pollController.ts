@@ -5,7 +5,7 @@ import { client } from '../redis'
 import { customAlphabet } from 'nanoid/async'
 import { pollResult } from './socketController'
 import { AggregatedStudent } from '../types/pollController.types'
-const nanoid = customAlphabet('qwertyuiopasdfghjklzxcvbnm1234567890', 6)
+const nanoid = customAlphabet('QWERTYUIOPASDFGHJKLZXCVBNM', 6)
 
 // set poll code expiry to 1 day
 const expiry = 60 * 60 * 24
