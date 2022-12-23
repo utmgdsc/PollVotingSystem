@@ -2,11 +2,12 @@ import { createClient } from 'redis'
 import fs from 'fs'
 import path from 'path'
 import readline from 'readline'
+
 const client = createClient({
   url: process.env.REDIS_URL
-});
+})
 
-(async () => {
+async function connectRedis () {
   client.on('error', (err) => console.log('Redis Client Error', err))
 
   await client.connect()
@@ -25,6 +26,6 @@ const client = createClient({
     console.log(line.trim())
     client.set(line.trim(), 'instructor')
   }
-})()
+}
 
-export { client }
+export { client, connectRedis }

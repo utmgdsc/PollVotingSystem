@@ -9,8 +9,11 @@ import {
 export const PollModel = model<PollDocument>('Poll', pollSchema)
 export const StudentModel = model<StudentDocument>('Student', studentSchema)
 
-connect(process.env.MONGODB_URL).catch((err) => {
-  throw err
-})
+export async function connectMongo () {
+  await connect(process.env.MONGODB_URL)
+  db.on('open', () => {
+    console.log('Connected to mongo')
+  })
+}
 
 export const db = connection

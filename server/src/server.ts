@@ -6,13 +6,11 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { io } from './socket'
 import pollRouter from './routes/pollRoute'
-import { db } from './db/mogoose'
+import { connectMongo } from './db/mogoose'
 import userRouter from './routes/userRoutes'
 import { getUser } from './controllers/userController'
+import { connectRedis } from './redis'
 dotenv.config()
-db.on('open', () => {
-  console.log('Connected to mongo')
-})
 
 // starting the express server
 const app = express()
@@ -46,6 +44,8 @@ app.use('/poll', pollRouter)
 
 const server = app.listen(port, () => {
   console.log('Listening on http://localhost:' + port)
+  connectRedis()
+  connectMongo()
   io.attach(server)
   io.use(async (socket, next) => {
     try {
