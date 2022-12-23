@@ -3,8 +3,9 @@ import { PollModel, StudentModel } from '../db/mogoose'
 import { io } from '../socket'
 import { client } from '../redis'
 import { customAlphabet } from 'nanoid/async'
-import { pollResult } from './socketController'
+import { pollResult, getRoomById } from './socketController'
 import { AggregatedStudent } from '../types/pollController.types'
+import { UserType } from '../types/user.types'
 const nanoid = customAlphabet('QWERTYUIOPASDFGHJKLZXCVBNM', 6)
 
 // set poll code expiry to 1 day
@@ -42,7 +43,7 @@ async function changePollStatus (pollId: string, hasStarted: boolean) {
       EX: expiry
     })
     const result = await pollResult(pollId, newSequence)
-    io.to('instructor-' + pollId).emit('result', result)
+    io.to(getRoomById(pollId, UserType.INSTRUCTOR)).emit('result', result)
   } else {
     // for every stop make the current counter negative to indicate that it is not an active sequence
     if (currSequence != null) {
