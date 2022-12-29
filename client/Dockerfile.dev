@@ -1,0 +1,6 @@
+FROM node:16
+ARG REACT_APP_BACKEND_URL
+WORKDIR /frontend
+COPY ./package.json ./yarn.lock .
+RUN yarn install --ignore-scripts --frozen-lockfile
+CMD ["yarn", "run", "start"]

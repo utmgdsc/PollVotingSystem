@@ -44,8 +44,6 @@ services:
       - caching
     ports:
       - "5001:5001"
-    env_file:
-      - ./server/.env
     environment:
       - TZ=America/New_York
 
@@ -63,8 +61,6 @@ services:
           - frontend
     ports:
       - "3001:3001"
-    env_file:
-      - ./client/.env
 
   nginx-proxy:
     container_name: nginx

@@ -1,0 +1,6 @@
+FROM node:16
+WORKDIR /api
+COPY ./package.json ./yarn.lock .
+RUN yarn install --ignore-scripts --frozen-lockfile
+CMD ["yarn", "run", "start"]
+
