@@ -2,6 +2,11 @@ import { StudentModel } from '../db/mogoose'
 import { io } from '../socket'
 import { Socket } from 'socket.io'
 import { client } from '../redis'
+import { UserType } from '../types/user.types'
+
+function getRoomById (pollId: string, userType?: UserType): string {
+  if (userType) { return userType + '-' + pollId } else { return pollId.toString() }
+}
 
 async function join (socket: Socket, pollCode: string) {
   try {
@@ -20,7 +25,9 @@ async function join (socket: Socket, pollCode: string) {
     const hasStarted =
       currSequence == null ? false : parseInt(currSequence) > 0
     console.log('Has Started', hasStarted)
-    socket.join(pollId)
+    socket.join(getRoomById(pollId))
+    // allow targeting specific user types
+    socket.join(getRoomById(pollId, socket.data.userType))
     socket.data.pollId = pollId
     io.to(socket.id).emit('pollStarted', hasStarted)
   } catch (err) {
@@ -82,7 +89,7 @@ async function vote (socket: Socket, answer: number, utorid: string) {
       { upsert: true }
     )
     pollResult(pollId, parseInt(currSequence)).then((data) => {
-      io.to(pollId).emit('result', data)
+      io.to(getRoomById(pollId, UserType.INSTRUCTOR)).emit('result', data)
     })
     io.to(socket.id).emit('ack', answer)
     return
@@ -92,4 +99,4 @@ async function vote (socket: Socket, answer: number, utorid: string) {
   }
 }
 
-export { vote, join, pollResult }
+export { vote, join, pollResult, getRoomById }

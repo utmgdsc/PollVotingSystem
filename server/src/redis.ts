@@ -2,6 +2,7 @@ import { createClient } from 'redis'
 import fs from 'fs'
 import path from 'path'
 import readline from 'readline'
+import { UserType } from './types/user.types'
 
 const client = createClient({
   url: process.env.REDIS_URL
@@ -24,7 +25,7 @@ async function connectRedis () {
 
   for await (const line of rl) {
     console.log(line.trim())
-    client.set(line.trim(), 'instructor')
+    client.set(line.trim(), UserType.INSTRUCTOR)
   }
 }
 

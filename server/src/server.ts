@@ -9,6 +9,7 @@ import pollRouter from './routes/pollRoute'
 import { connectMongo } from './db/mogoose'
 import userRouter from './routes/userRoutes'
 import { getUser } from './controllers/userController'
+import { UserType } from './types/user.types'
 import { connectRedis } from './redis'
 dotenv.config()
 
@@ -34,7 +35,7 @@ app.use(async (req, res, next) => {
       return next(new Error('Invalid utorid'))
     }
     const userType = await getUser(req.headers.utorid)
-    if (userType.data.userType === 'instructor') next()
+    if (userType.data.userType === UserType.INSTRUCTOR) next()
     else next(new Error('Forbidden User'))
   } catch (err) {
     next(new Error('Forbidden User'))
@@ -61,5 +62,10 @@ const server = app.listen(port, () => {
     } catch (err) {
       next(new Error('Not Authorized'))
     }
+  })
+  io.use(async (socket, next) => {
+    const userType = await getUser(socket.data.utorid)
+    socket.data.userType = userType.data.userType
+    next()
   })
 })
