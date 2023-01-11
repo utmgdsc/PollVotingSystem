@@ -16,6 +16,8 @@ export const VotePage = () => {
   const cookies = new Cookies();
   const [pollCode] = useState(cookies.get(pollCodeCookie));
   const [started, setStarted] = useState(false);
+  const [hasAllowedNotif, setAllowedNotif] = useState(false);
+  const [lastNotif, setLastNotif] = useState<Notification | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [timeoutCode, setTimeoutCode] = useState(0);
@@ -23,24 +25,25 @@ export const VotePage = () => {
 
   const [errorCode, setErrorCode] = useState(0);
   const [selectedOption, setSelectionOption] = useState("");
-  const [isFocus, setFocus] = useState(true);
-
-  const onBlur = () => {
-    setFocus(false);
-  };
 
   const onFocus = () => {
-    document.title = mcsPollVoting;
-    setFocus(true);
+    if (document.visibilityState === "visible") {
+      document.title = mcsPollVoting;
+    }
   };
 
   useEffect(() => {
     socket.emit("join", pollCode);
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
+    try {
+      Notification.requestPermission().then((permission) =>
+        setAllowedNotif(permission === "granted")
+      );
+    } catch (e) {
+      /* notifications probably not supported */
+    }
+    document.addEventListener("visibilitychange", onFocus);
     return () => {
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
     };
   }, []);
 
@@ -62,8 +65,20 @@ export const VotePage = () => {
         const audio = new Audio("/newQuestion.wav");
         audio.play();
         setSelectionOption("");
-        if (!isFocus) {
+        if (document.visibilityState === "hidden") {
           document.title = questionStarted;
+          if (hasAllowedNotif) {
+            /* Close old notification to prevent spam */
+            if (lastNotif != null) {
+              lastNotif.close();
+            }
+            /* send new notification */
+            const notification = new Notification("New Question Started!", {
+              icon: "/favicon.ico",
+              tag: "new-question",
+            });
+            setLastNotif(notification);
+          }
         }
       }
     };
@@ -78,6 +93,10 @@ export const VotePage = () => {
 
     const voteAckHandler = (data: any) => {
       setSelectionOption(String.fromCharCode(data + 64));
+      if (lastNotif != null) {
+        lastNotif.close();
+        setLastNotif(null);
+      }
       clearTimeout(timeoutCode);
       setLoading(false);
     };
@@ -89,7 +108,7 @@ export const VotePage = () => {
       socket.off("end", pollClosedHandler);
       socket.off("ack", voteAckHandler);
     };
-  }, [errorCode, started, selectedOption]);
+  }, [errorCode, started, selectedOption, hasAllowedNotif, lastNotif]);
 
   const pollButtonHandler = (selectedOption: string) => {
     setLoading(true);
@@ -126,7 +145,11 @@ export const VotePage = () => {
   ) : (
     <div className={"flex flex-col items-center px-5"}>
       <Header text={`Poll Code: ${pollCode}`} />
-      <Header text={`Selected Option: ${selectedOption}`} />
+      <Header
+        text={`Selected Option: ${
+          selectedOption.length > 0 ? selectedOption : "None"
+        }`}
+      />
       <div className={"relative"}>
         <div className={"flex flex-col max-w-md"}>{optionButtons()}</div>
         {loading ? (

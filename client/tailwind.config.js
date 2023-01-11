@@ -17,6 +17,7 @@ module.exports = {
       primary: "#00204E",
       secondary: "#FFFFFF",
       hover: "#00B5B5",
+      selected: "#0171B7",
       background: "#F5F5F5",
     }),
   },
