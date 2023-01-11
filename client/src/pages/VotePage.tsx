@@ -22,7 +22,9 @@ export const VotePage = () => {
   const [selectedOption, setSelectionOption] = useState("");
 
   const onFocus = () => {
-    if (document.visibilityState === "visible") document.title = mcsPollVoting;
+    if (document.visibilityState === "visible") {
+      document.title = mcsPollVoting;
+    }
   };
 
   useEffect(() => {
@@ -61,8 +63,10 @@ export const VotePage = () => {
         if (document.visibilityState === "hidden") {
           document.title = questionStarted;
           if (hasAllowedNotif) {
-            /* first, close old notification to prevent spam */
-            if (lastNotif != null) lastNotif.close();
+            /* Close old notification to prevent spam */
+            if (lastNotif != null) {
+              lastNotif.close();
+            }
             /* send new notification */
             const notification = new Notification("New Question Started!", {
               icon: "/favicon.ico",
