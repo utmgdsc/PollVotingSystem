@@ -3,3 +3,6 @@
 
 cd client
 npx lint-staged
+
+cd ../server
+yarn lint
