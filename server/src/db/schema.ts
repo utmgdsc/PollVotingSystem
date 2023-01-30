@@ -1,4 +1,4 @@
-import { Schema, Document, Types } from "mongoose";
+import { Schema, Document, Types } from 'mongoose'
 
 /**
  * student subdocument. Used as nested objects in PollResults schema
@@ -18,25 +18,25 @@ export interface StudentDocument extends Student, Document {}
 export const studentSchema = new Schema<StudentDocument>({
   utorid: {
     type: String,
-    required: true,
+    required: true
   },
   answer: {
     type: Number,
-    required: true,
+    required: true
   },
   timestamp: {
     type: Date,
-    required: true,
+    required: true
   },
   sequence: {
     type: Number,
-    required: true,
+    required: true
   },
   pollId: {
     type: String,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 
 /**
  * Poll schema. Represents how a single poll will look like
@@ -64,7 +64,7 @@ export const pollSchema = new Schema<PollDocument>({
   description: String,
   courseCode: { type: String, required: true },
   created: { type: Date, required: true },
-  options: Number,
-});
+  options: Number
+})
 
-export const ObjectId = Types.ObjectId;
+export const ObjectId = Types.ObjectId

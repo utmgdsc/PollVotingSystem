@@ -57,6 +57,8 @@ Note: Only the core files & directories are listed below
 |   |── routes
 |   |   |── pollRoute.ts
 |   |   └── userRoutes.ts
+|   |── types
+|   |   └── pollController.types.ts
 |   |── redis.ts                    # Redis related configurations to setup the professor list
 |   |── server.ts
 |   └── socket.ts
@@ -205,7 +207,7 @@ utorid3
 2. Setting up the server `.env` file (Placed in the root of your `server` folder)
 
 ```
-PPORT=3001
+PORT=3001
 MONGODB_URL="mongodb://localhost:27018/quiz"
 FRONTEND_URL="http://localhost:3000"
 REDIS_URL="redis://default:password@localhost:6379"

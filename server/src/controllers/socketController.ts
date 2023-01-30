@@ -1,75 +1,78 @@
-import { StudentModel } from "../db/mogoose";
-import { io } from "../socket";
-import { Socket } from "socket.io";
-import { client } from "../redis";
+import { StudentModel } from '../db/mogoose'
+import { io } from '../socket'
+import { Socket } from 'socket.io'
+import { client } from '../redis'
+import { UserType } from '../types/user.types'
 
-async function join(socket: Socket, pollCode: string) {
+function getRoomById (pollId: string, userType?: UserType): string {
+  if (userType) { return userType + '-' + pollId } else { return pollId.toString() }
+}
+
+async function join (socket: Socket, pollCode: string) {
   try {
-    console.log(`join: ${socket.id}`);
-    if (pollCode === null || pollCode === undefined)
-      throw { code: 1, message: "Invalid poll code" };
-    const pollId = await client.get(pollCode);
-    console.log(pollId);
-    if (pollId === null) throw { code: 1, message: "Invalid poll code" };
+    console.log(`join: ${socket.id}`)
+    if (pollCode === null || pollCode === undefined) { throw { code: 1, message: 'Invalid poll code' } }
+    const pollId = await client.get(pollCode)
+    console.log(pollId)
+    if (pollId === null) throw { code: 1, message: 'Invalid poll code' }
 
     // ensure that socket is connected to 1 room (other than the default room)
     socket.rooms.forEach((room) => {
-      if (room !== socket.id) socket.leave(room);
-    });
+      if (room !== socket.id) socket.leave(room)
+    })
 
-    const currSequence = await client.get(pollId);
+    const currSequence = await client.get(pollId)
     const hasStarted =
-      currSequence == null ? false : parseInt(currSequence) > 0;
-    console.log("Has Started", hasStarted);
-    socket.join(pollId);
-    socket.data["pollId"] = pollId;
-    io.to(socket.id).emit("pollStarted", hasStarted);
+      currSequence == null ? false : parseInt(currSequence) > 0
+    console.log('Has Started', hasStarted)
+    socket.join(getRoomById(pollId))
+    // allow targeting specific user types
+    socket.join(getRoomById(pollId, socket.data.userType))
+    socket.data.pollId = pollId
+    io.to(socket.id).emit('pollStarted', hasStarted)
   } catch (err) {
-    console.log(err);
-    io.to(socket.id).emit("error", err);
+    console.log(err)
+    io.to(socket.id).emit('error', err)
   }
 }
 
-async function pollResult(pollId: string, sequence: number) {
+async function pollResult (pollId: string, sequence: number) {
   try {
     const result = await StudentModel.aggregate([
       { $match: { pollId, sequence } },
       {
         $facet: {
-          result: [{ $group: { _id: "$answer", count: { $sum: 1 } } }],
-          totalVotes: [{ $count: "totalVotes" }],
-        },
-      },
+          result: [{ $group: { _id: '$answer', count: { $sum: 1 } } }],
+          totalVotes: [{ $count: 'totalVotes' }]
+        }
+      }
     ]).then((data: any): any => {
       return {
         result: data[0].result,
         totalVotes:
-          data[0].totalVotes.length > 0 ? data[0].totalVotes[0].totalVotes : 0,
-      };
-    });
-    console.log(result);
-    return result;
+          data[0].totalVotes.length > 0 ? data[0].totalVotes[0].totalVotes : 0
+      }
+    })
+    console.log(result)
+    return result
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }
 
-async function vote(socket: Socket, answer: number, utorid: string) {
+async function vote (socket: Socket, answer: number, utorid: string) {
   try {
-    console.log(`vote: ${socket.id}`);
-    let pollId = socket.data.pollId;
-    if (pollId === null || pollId === undefined)
-      throw { code: 1, message: "haven't joined any room" };
-    const currSequence = await client.get(pollId);
-    console.log(currSequence);
+    console.log(`vote: ${socket.id}`)
+    const pollId = socket.data.pollId
+    if (pollId === null || pollId === undefined) { throw { code: 1, message: "haven't joined any room" } }
+    const currSequence = await client.get(pollId)
+    console.log(currSequence)
     if (currSequence === null || parseInt(currSequence) < 0) {
-      throw { code: 2, message: "Poll not live yet" };
+      throw { code: 2, message: 'Poll not live yet' }
     }
 
-    if (utorid === undefined || utorid === null)
-      throw { code: 1, message: "Invalid utorid" };
-    if (answer === undefined || answer === null)
-      throw { code: 2, message: "Invalid answer" };
+    if (utorid === undefined || utorid === null) { throw { code: 1, message: 'Invalid utorid' } }
+    if (answer === undefined || answer === null) { throw { code: 2, message: 'Invalid answer' } }
 
     await StudentModel.updateOne(
       {
@@ -81,19 +84,19 @@ async function vote(socket: Socket, answer: number, utorid: string) {
         utorid,
         sequence: parseInt(currSequence),
         answer,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
       { upsert: true }
-    );
+    )
     pollResult(pollId, parseInt(currSequence)).then((data) => {
-      io.to(pollId).emit("result", data);
-    });
-    io.to(socket.id).emit("ack", answer);
-    return;
+      io.to(getRoomById(pollId, UserType.INSTRUCTOR)).emit('result', data)
+    })
+    io.to(socket.id).emit('ack', answer)
+    return
   } catch (err) {
-    console.log(err);
-    io.to(socket.id).emit("error", err);
+    console.log(err)
+    io.to(socket.id).emit('error', err)
   }
 }
 
-export { vote, join, pollResult };
+export { vote, join, pollResult, getRoomById }

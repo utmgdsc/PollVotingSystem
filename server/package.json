@@ -8,7 +8,9 @@
     "prestart": "tsc",
     "start": "node .",
     "dev": "nodemon --watch src -e ts,ejs --exec yarn run start",
-    "build": "tsc --project ./"
+    "build": "tsc --project ./",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
   },
   "repository": "git+https://github.com/hiimchrislim/QuizVotingSystem.git",
   "author": "Chris, Akshit, Shubh, Ilir",
@@ -42,6 +44,7 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
+    "husky": "^8.0.1",
     "nodemon": "^2.0.14",
     "prettier": "^2.4.1",
     "socket.io-client": "^4.3.2",
